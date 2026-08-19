@@ -159,6 +159,95 @@ function App() {
             </div>
           </div>
         </section>
+
+         <section className="bg-[#f3efe9] px-5 py-10 sm:px-8 sm:py-14 lg:px-16 lg:py-20">
+          <div className="mx-auto max-w-[1200px] text-center">
+            <h2 className="text-4xl font-black tracking-tight text-[#1a130f] sm:text-5xl lg:text-6xl">
+              100% <span className="text-[#c94f0d]">Fresh Product</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-[#5c5854] sm:text-lg">
+              Experience the pure, vibrant flavours of Rwanda in every sip. Our beverages are all-natural, with no artificial additives.
+            </p>
+
+            <div className="mt-10 grid gap-8 md:grid-cols-2">
+              <article className="overflow-hidden rounded-[18px] border border-[#eadfce] bg-[#f6f1ed] shadow-[0_14px_35px_rgba(80,52,30,0.06)]">
+                <div className="flex h-[360px] items-center justify-center bg-[#f7f2ee] p-6">
+                  <img
+                    src="https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=900&q=80"
+                    alt="Sugarcane wine"
+                    className="h-full w-full rounded-[12px] object-cover"
+                  />
+                </div>
+                <div className="flex items-center justify-between gap-4 px-5 py-4 text-[#1d1d1d] sm:px-6">
+                  <span className="text-base font-medium sm:text-lg">Vicas sugarcane wine</span>
+                  <span className="text-base font-semibold text-[#1d1d1d] sm:text-lg">Fr 12.000</span>
+                </div>
+              </article>
+
+              <article className="overflow-hidden rounded-[18px] border border-[#eadfce] bg-[#f6f1ed] shadow-[0_14px_35px_rgba(80,52,30,0.06)]">
+                <div className="flex h-[360px] items-center justify-center bg-[#f7f2ee] p-6">
+                  <img
+                    src="https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=900&q=80"
+                    alt="Passion juice"
+                    className="h-full w-full rounded-[12px] object-cover"
+                  />
+                </div>
+                <div className="flex items-center justify-between gap-4 px-5 py-4 text-[#1d1d1d] sm:px-6">
+                  <span className="text-base font-medium sm:text-lg">La vie Passion juice</span>
+                  <span className="text-base font-semibold text-[#1d1d1d] sm:text-lg">Fr 9.000</span>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-[#f3efe9] px-5 py-10 sm:px-8 sm:py-14 lg:px-16 lg:py-20">
+          <div className="mx-auto max-w-[1300px]">
+            <div className="flex flex-col items-center justify-center gap-10 lg:flex-row lg:items-center lg:justify-between lg:gap-12">
+              <div className="relative w-full max-w-[700px] overflow-hidden rounded-[18px] border border-[#e7d6c3] bg-[#f8f5f2] p-4 shadow-[0_10px_30px_rgba(110,66,20,0.08)] sm:p-6">
+                <div className="absolute left-0 right-0 top-6 h-[3px] bg-[#c95d1d] opacity-90" />
+
+                <div className="relative mt-8 flex items-end justify-center gap-4 sm:gap-8">
+                  <img
+                    src="https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1200&q=80"
+                    alt="Exalto wine bottles"
+                    className="h-[330px] w-[220px] object-cover object-center sm:h-[380px] sm:w-[260px]"
+                  />
+                  <img
+                    src="https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=1200&q=80"
+                    alt="Exalto passion fruit juice bottle"
+                    className="h-[330px] w-[220px] object-cover object-center sm:h-[380px] sm:w-[260px]"
+                  />
+                </div>
+
+                <div className="absolute bottom-0 left-0 right-0 h-4 bg-[#c95d1d] opacity-90" />
+              </div>
+
+              <div className="max-w-[520px] text-center lg:text-left">
+                <p className="text-lg font-medium italic text-[#c84e17] sm:text-xl">Limited Offer For Customer</p>
+                <h2 className="mt-4 text-4xl font-black leading-[1.05] tracking-[-0.04em] text-[#1f1a17] sm:text-5xl lg:text-6xl">
+                  Exalto Pure Passion
+                  <span className="mt-2 block text-[#c84e17]">Fruit Juice</span>
+                  <span className="mt-2 block font-black text-[#1f1a17]">La vie passion juice.</span>
+                </h2>
+
+                <div className="mx-auto my-6 h-[2px] w-24 bg-[#b7662d] lg:mx-0" />
+
+                <p className="text-base leading-8 text-[#534d49] sm:text-lg">
+                  A burst of tropical sunshine in a bottle. Tangy, aromatic, and intensely
+                  flavourful. Cold-pressed from ripe, locally sourced passion fruits to preserve
+                  nutrients and taste. A healthy, refreshing beverage rich in vitamins and
+                  antioxidants.
+                </p>
+
+                <button className="mt-8 inline-flex items-center justify-center gap-3 rounded-md bg-[#c84e17] px-8 py-4 text-base font-bold uppercase tracking-wide text-white shadow-[0_12px_20px_rgba(200,78,23,0.28)] transition-transform hover:-translate-y-0.5 hover:bg-[#a83e12]">
+                  Shop Now <ChevronRight size={18} />
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+        
       </main>
 
       {/* FOOTER */}
