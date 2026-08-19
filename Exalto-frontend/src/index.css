@@ -52,12 +52,14 @@
   }
 }
 
+/* Make root responsive: full width with a sensible max and horizontal padding */
 #root {
-  width: 1126px;
-  max-width: 100%;
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
+  padding: 0 16px;
   text-align: center;
-  border-inline: 1px solid var(--border);
+  border-inline: none;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
