@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react'
 import {
-  ArrowLeft,
-  ArrowRight,
   Heart,
   Search,
   ShoppingCart,
@@ -58,27 +56,41 @@ function App() {
       </header>
 
       <main className="pt-[72px] sm:pt-[96px]">
-        <section className="relative h-[calc(100vh-72px)] sm:h-[calc(100vh-96px)] w-full">
-          <img src="/assets/hero.svg" alt="Hero" className="absolute inset-0 w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-black/20" />
-
-          <div className="relative z-10 flex h-full items-center">
-            <div className="mx-auto max-w-3xl px-4 text-center md:text-left">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white">EXALTO</h1>
-              <p className="mt-4 text-white/90 text-lg sm:text-xl">Fresh produce — direct from farm to business</p>
-              <div className="mt-8">
-                <a href="/shop" className="inline-flex h-12 sm:h-16 items-center justify-center rounded-full bg-gradient-to-r from-[#d63d05] to-[#d47728] px-6 sm:px-10 text-white font-bold text-sm sm:text-lg shadow-lg">SHOP NOW <ChevronRight className="ml-3" size={18} /></a>
+        <section className="bg-[#fffdf8] px-5 py-12 sm:px-8 sm:py-20 lg:px-16 lg:py-24">
+          <div className="mx-auto grid max-w-[1480px] items-center gap-12 lg:grid-cols-[minmax(360px,0.9fr)_minmax(480px,1.1fr)] lg:gap-20">
+            <div className="relative mx-auto flex aspect-square w-full max-w-[560px] items-center justify-center overflow-hidden rounded-[2rem] bg-[#fff5b5] shadow-[0_24px_70px_rgba(205,103,22,0.14)]">
+              <div className="absolute -left-16 top-16 h-64 w-64 rounded-full bg-[#ffc400] blur-[2px]" />
+              <div className="absolute -right-12 bottom-8 h-72 w-72 rounded-full bg-[#f7a313] opacity-80 blur-2xl" />
+              <div className="absolute bottom-10 h-12 w-72 rounded-[50%] bg-[#e4a50c]/40 blur-xl" />
+              <div className="relative z-10 flex h-[72%] w-32 flex-col items-center rounded-[2rem] bg-gradient-to-r from-[#a83a16] via-[#e47632] to-[#8b2c12] shadow-[8px_20px_20px_rgba(106,44,10,0.25)] sm:w-40">
+                <div className="-mt-10 h-14 w-16 rounded-t-xl bg-white shadow-md sm:w-20" />
+                <div className="mt-2 h-16 w-full rounded-t-[1.5rem] border-b-4 border-[#f6aa58]/70 bg-[#ba5426]/80" />
+                <div className="mt-4 flex h-32 w-[86%] flex-col items-center justify-center rounded-xl bg-gradient-to-br from-[#a8e2ad] to-[#e5f28a] text-center text-[#73366b] shadow-inner sm:h-40">
+                  <span className="text-xs font-black tracking-[0.2em] text-[#ffffff]">LA VIE</span>
+                  <span className="mt-1 font-serif text-xl italic leading-none sm:text-2xl">Passion</span>
+                  <span className="font-serif text-xl italic leading-none sm:text-2xl">Juice</span>
+                </div>
               </div>
+              <span className="absolute bottom-20 left-8 z-20 -rotate-12 font-serif text-3xl font-bold italic text-[#7c2d69] sm:left-12 sm:text-5xl">Passion<br />Juice</span>
+            </div>
+
+            <div className="max-w-3xl lg:pb-4">
+              <p className="text-center text-xl font-medium text-[#be4b1b] sm:text-2xl lg:text-left">Welcome to Exalto Ltd</p>
+              <h1 className="mt-8 max-w-3xl text-center text-5xl font-black leading-[1.08] tracking-tight text-[#29150e] sm:text-6xl lg:text-left lg:text-7xl">
+                All in one <span className="text-[#bd4212]">to make a</span> different structure
+              </h1>
+              <div className="mt-8 flex justify-center gap-3 lg:justify-start">
+                <span className="h-2 w-10 bg-[#c54b16]" />
+                <span className="h-2 w-10 bg-[#c54b16]" />
+              </div>
+              <p className="mt-12 text-center text-lg leading-8 text-[#6d6b69] sm:text-xl sm:leading-9 lg:text-left">
+                “At Exalto, we transform Rwanda’s finest sugarcane and passion fruit into exceptional natural wines and juices. By merging advanced engineering with time-honored traditions, we create beverages that are as pure and vibrant as their source. Experience a refreshing taste of innovation and nature, crafted for both local enjoyment and global appreciation.”
+              </p>
+              <a href="/contact" className="mx-auto mt-10 inline-flex h-16 items-center justify-center gap-4 bg-[#c44b16] px-8 text-base font-bold text-white transition-colors hover:bg-[#9e3710] sm:px-10 lg:mx-0">
+                BECOME A DISTRIBUTOR <ChevronRight size={24} />
+              </a>
             </div>
           </div>
-
-          <button aria-label="Previous" className="absolute left-4 top-1/2 -translate-y-1/2 z-20 h-12 w-12 sm:h-16 sm:w-16 rounded-full bg-[#c94708] text-white flex items-center justify-center">
-            <ArrowLeft size={20} />
-          </button>
-
-          <button aria-label="Next" className="absolute right-4 top-1/2 -translate-y-1/2 z-20 h-12 w-12 sm:h-16 sm:w-16 rounded-full bg-[#c94708] text-white flex items-center justify-center">
-            <ArrowRight size={20} />
-          </button>
         </section>
 
         {/* Polished sections */}
