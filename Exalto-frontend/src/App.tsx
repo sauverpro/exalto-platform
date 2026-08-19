@@ -56,6 +56,25 @@ function App() {
       </header>
 
       <main className="pt-[72px] sm:pt-[96px]">
+        <section
+          className="relative flex min-h-[calc(100svh-72px)] items-center overflow-hidden bg-[#252525] bg-cover bg-center sm:min-h-[calc(100svh-96px)]"
+          style={{
+            backgroundImage: "linear-gradient(90deg, rgba(20, 20, 20, 0.86) 0%, rgba(20, 20, 20, 0.66) 46%, rgba(20, 20, 20, 0.42) 100%), url('https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=2200&q=85')",
+          }}
+        >
+          <div className="relative z-10 mx-auto w-full max-w-[1480px] px-8 py-28 sm:px-12 lg:px-16">
+            <h1 className="max-w-[520px] text-left text-7xl font-black uppercase leading-[0.95] tracking-[0.02em] text-white sm:text-8xl lg:text-9xl">
+              Exalto
+            </h1>
+            <a
+              href="/shop"
+              className="mt-20 inline-flex h-16 min-w-[250px] items-center justify-center gap-4 rounded-full bg-[#c94f0d] px-8 text-lg font-bold text-white transition-colors hover:bg-[#a83d08]"
+            >
+              SHOP NOW <ChevronRight size={28} />
+            </a>
+          </div>
+        </section>
+
         <section className="bg-[#fffdf8] px-5 py-12 sm:px-8 sm:py-20 lg:px-16 lg:py-24">
           <div className="mx-auto grid max-w-[1480px] items-center gap-12 lg:grid-cols-[minmax(360px,0.9fr)_minmax(480px,1.1fr)] lg:gap-20">
             <div className="relative mx-auto flex aspect-square w-full max-w-[560px] items-center justify-center overflow-hidden rounded-[2rem] bg-[#fff5b5] shadow-[0_24px_70px_rgba(205,103,22,0.14)]">
