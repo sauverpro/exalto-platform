@@ -7,6 +7,7 @@ import {
   ShoppingCart,
   ChevronRight,
 } from "lucide-react";
+import Footer from './components/Footer';
 
 
 function App() {
@@ -83,6 +84,9 @@ function App() {
         {/* Polished sections */}
        
       </main>
+
+      {/* FOOTER */}
+      <Footer />
     </div>
   )
 }
