@@ -112,8 +112,53 @@ function App() {
           </div>
         </section>
 
-        {/* Polished sections */}
-       
+        <section className="bg-[#f3efe9] px-5 py-10 sm:px-8 sm:py-14 lg:px-16 lg:py-18">
+          <div className="mx-auto grid max-w-[1400px] gap-8 lg:grid-cols-3">
+            <div className="rounded-[18px] bg-[#f0e8e1] p-6 sm:p-8">
+              <div className="mx-auto mb-8 flex h-56 w-56 items-center justify-center rounded-full bg-[#f6efe9]">
+                <div className="relative flex h-28 w-20 items-end justify-center rounded-[16px_16px_10px_10px] bg-gradient-to-b from-[#0a2109] via-[#102f13] to-[#091d0d] shadow-[0_22px_28px_rgba(0,0,0,0.18)]">
+                  <div className="absolute -top-7 left-1/2 h-8 w-4 -translate-x-1/2 rounded-t-[1.2rem] border-b-[8px] border-[#f0efee] bg-[#2a2a2a]" />
+                  <div className="absolute inset-x-[18%] top-6 h-10 rounded-[10px] border border-[#d8b36a]/40 bg-[#f2f7ef]/10" />
+                </div>
+              </div>
+              <h2 className="text-center text-4xl font-black leading-tight text-[#1b1b1b] sm:text-5xl">Naturally Sourced</h2>
+              <p className="mt-6 text-center text-lg leading-8 text-[#514d49] sm:text-[1.15rem]">
+                We use 100% locally grown sugarcane and passion fruit, supporting Rwandan farmers.
+              </p>
+            </div>
+
+            <div className="rounded-[18px] bg-[#f0e8e1] p-6 sm:p-8">
+              <div className="mx-auto mb-8 flex h-56 w-56 items-center justify-center rounded-full bg-[#f6efe9]">
+                <div className="relative flex h-28 w-28 items-center justify-center rounded-full bg-[#f2f5f2] shadow-[0_18px_24px_rgba(0,0,0,0.08)]">
+                  <div className="absolute inset-3 rounded-full bg-[radial-gradient(circle_at_30%_30%,#f2d090_0%,#f7d66c_18%,#d38d23_42%,#a44a20_58%,#7a2416_100%)] opacity-90" />
+                  <div className="absolute inset-x-5 bottom-5 h-8 rounded-full bg-[#f0e9d7] opacity-70 blur-sm" />
+                  <div className="absolute left-5 top-5 h-7 w-7 rounded-full bg-[#d46f39] opacity-90" />
+                  <div className="absolute right-5 top-5 h-7 w-7 rounded-full bg-[#d46f39] opacity-90" />
+                  <div className="absolute bottom-8 left-10 h-8 w-8 rounded-full bg-[#d66e2a] opacity-90" />
+                  <div className="absolute bottom-8 right-10 h-8 w-8 rounded-full bg-[#d66e2a] opacity-90" />
+                </div>
+              </div>
+              <h2 className="text-center text-4xl font-black leading-tight text-[#1b1b1b] sm:text-5xl">Engineered for Purity</h2>
+              <p className="mt-6 text-center text-lg leading-8 text-[#514d49] sm:text-[1.15rem]">
+                Our modern processing techniques ensure every bottle retains its natural flavour and health benefits.
+              </p>
+            </div>
+
+            <div className="rounded-[18px] bg-[#f0e8e1] p-6 sm:p-8">
+              <div className="mx-auto mb-8 flex h-56 w-56 items-center justify-center rounded-full bg-[#f6efe9]">
+                <div className="relative flex h-28 w-20 items-end justify-center rounded-[16px_16px_10px_10px] bg-gradient-to-b from-[#120b12] via-[#472a1d] to-[#140903] shadow-[0_22px_28px_rgba(0,0,0,0.18)]">
+                  <div className="absolute -top-7 left-1/2 h-8 w-4 -translate-x-1/2 rounded-t-[1.2rem] border-b-[8px] border-[#f0efee] bg-[#2a2a2a]" />
+                  <div className="absolute bottom-8 left-1/2 h-6 w-14 -translate-x-1/2 rounded-full bg-[#f5d8a7] opacity-90" />
+                  <div className="absolute bottom-3 left-1/2 h-8 w-10 -translate-x-1/2 rounded-[12px] bg-[#f0d6a0] opacity-90" />
+                </div>
+              </div>
+              <h2 className="text-center text-4xl font-black leading-tight text-[#1b1b1b] sm:text-5xl">Local &amp; Global Reach</h2>
+              <p className="mt-6 text-center text-lg leading-8 text-[#514d49] sm:text-[1.15rem]">
+                Text: Proudly serving our community in Rwanda and sharing our craft with the world.
+              </p>
+            </div>
+          </div>
+        </section>
       </main>
 
       {/* FOOTER */}
