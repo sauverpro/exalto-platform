@@ -8,17 +8,19 @@ const Shop = () => {
       {/* =========================
           SHOP HERO
       ========================= */}
-      <section className="flex h-[170px] items-center justify-center bg-[#9b908e]">
-        <div className="text-center text-white">
-          <h1 className="text-2xl font-semibold">
-            Shop
-          </h1>
+   
+<section className="flex h-[170px] items-center justify-center bg-[#9b908e]">
+  <div className="text-center text-white">
+    <h1 className="text-2xl font-semibold">
+      Shop
+    </h1>
 
-          <p className="mt-2 text-xs">
-            Home / Shop
-          </p>
-        </div>
-      </section>
+    <p className="mt-2 text-xs">
+      Home / Shop
+    </p>
+  </div>
+</section>
+
 
 
       {/* =========================
