@@ -1,5 +1,4 @@
 import { ChevronRight } from 'lucide-react'
-import Footer from '../components/Footer'
 
 function HomePage() {
   return (
@@ -194,16 +193,15 @@ function HomePage() {
                   antioxidants.
                 </p>
 
-                <button className="mt-8 inline-flex items-center justify-center gap-3 rounded-md bg-[#c84e17] px-6 py-3 text-sm font-bold uppercase tracking-wide text-white shadow-[0_12px_20px_rgba(200,78,23,0.28)] transition-transform hover:-translate-y-0.5 hover:bg-[#a83e12] sm:px-8 sm:py-4 sm:text-base">
+                <a href="/shop" className="mt-8 inline-flex items-center justify-center gap-3 rounded-md bg-[#c84e17] px-6 py-3 text-sm font-bold uppercase tracking-wide text-white shadow-[0_12px_20px_rgba(200,78,23,0.28)] transition-transform hover:-translate-y-0.5 hover:bg-[#a83e12] sm:px-8 sm:py-4 sm:text-base">
                   Shop Now <ChevronRight size={18} />
-                </button>
+                </a>
               </div>
             </div>
           </div>
         </section>
       </main>
 
-      <Footer />
     </div>
   )
 }
