@@ -1,6 +1,7 @@
 import type { Product } from "../data/product";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Heart } from "lucide-react";
 import { useCart } from "../context/CartContext";
+import { useFavorites } from "../context/FavoritesContext";
 import { useState } from "react";
 
 interface ProductCardProps {
@@ -9,17 +10,35 @@ interface ProductCardProps {
 
 const ProductCard = ({ product }: ProductCardProps) => {
   const { addToCart } = useCart();
+  const { toggleFavorite, isFavorite } = useFavorites();
   const [showDetails, setShowDetails] = useState(false);
+  const favorited = isFavorite(product.id);
+
   return (
-    <article className="w-full max-w-[280px] overflow-hidden border border-[#eee8e2] bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+    <article className="relative w-full max-w-[280px] overflow-hidden border border-[#eee8e2] bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
       
       {/* Product Image */}
-      <div className="h-[220px] w-full overflow-hidden bg-gray-50">
+      <div className="h-[220px] w-full overflow-hidden bg-gray-50 relative">
         <img
           src={product.image}
           alt={product.name}
           className="h-full w-full object-cover"
         />
+        <button
+          type="button"
+          onClick={() => toggleFavorite(product)}
+          className="absolute top-3 right-3 rounded-full bg-white p-2 shadow-md transition hover:bg-gray-100"
+          aria-label={favorited ? "Remove from favorites" : "Add to favorites"}
+        >
+          <Heart
+            size={18}
+            className={`transition ${
+              favorited
+                ? "fill-[#c94708] text-[#c94708]"
+                : "text-gray-400 hover:text-[#c94708]"
+            }`}
+          />
+        </button>
       </div>
 
       {/* Product Information */}

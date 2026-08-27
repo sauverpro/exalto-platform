@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   Heart,
   Search,
@@ -9,11 +9,14 @@ import {
   UserRound,
 } from 'lucide-react'
 import { useCart } from '../context/CartContext'
+import { useFavorites } from '../context/FavoritesContext'
 
 function Navbar() {
   const [navSolid, setNavSolid] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { itemCount } = useCart()
+  const { favorites } = useFavorites()
+  const navigate = useNavigate()
 
   useEffect(() => {
     function onScroll() {
@@ -24,6 +27,10 @@ function Navbar() {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  const handleSearchClick = () => {
+    navigate('/shop')
+  }
 
   return (
     <header className={`fixed top-0 left-0 w-full z-40 transition-all ${navSolid ? 'bg-white/95 shadow-md' : 'bg-transparent'}`}>
@@ -40,26 +47,34 @@ function Navbar() {
         </nav>
 
         <div className="flex items-center gap-3 sm:gap-6">
-          <button type="button" aria-label="Search" className="relative hidden h-10 w-10 sm:flex sm:h-12 sm:w-12 items-center justify-center rounded-full bg-[#f8f1f1] text-[#c94708]">
+          <button
+            type="button"
+            onClick={handleSearchClick}
+            aria-label="Search"
+            className="relative hidden h-10 w-10 sm:flex sm:h-12 sm:w-12 items-center justify-center rounded-full bg-[#f8f1f1] text-[#c94708] hover:bg-[#ede5dd] transition"
+          >
             <Search size={20} />
           </button>
 
-          <button type="button" aria-label="Shopping cart" className="relative flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-[#f8f1f1] text-[#c94708]">
+          <button type="button" aria-label="Shopping cart" className="relative flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-[#f8f1f1] text-[#c94708] hover:bg-[#ede5dd] transition">
             <Link to="/cart" aria-label="Open shopping cart"><ShoppingCart size={20} /></Link>
             {itemCount > 0 && <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#c94708] text-xs font-bold text-white">{itemCount}</span>}
           </button>
 
-          <Link to="/login" aria-label="Account" className="hidden h-10 w-10 items-center justify-center rounded-full bg-[#f8f1f1] text-[#c94708] sm:flex sm:h-12 sm:w-12"><UserRound size={20} /></Link>
+          <Link to="/login" aria-label="Account" className="hidden h-10 w-10 items-center justify-center rounded-full bg-[#f8f1f1] text-[#c94708] hover:bg-[#ede5dd] transition sm:flex sm:h-12 sm:w-12"><UserRound size={20} /></Link>
 
-          <button type="button" aria-label="Wishlist" className="relative flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-[#f8f1f1] text-[#c94708]">
-            <Heart size={20} />
+          <button type="button" aria-label="Wishlist" className="relative flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-[#f8f1f1] text-[#c94708] hover:bg-[#ede5dd] transition">
+            <Link to="/favorites" aria-label="View favorites" className="flex items-center justify-center">
+              <Heart size={20} />
+              {favorites.length > 0 && <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#c94708] text-xs font-bold text-white">{favorites.length}</span>}
+            </Link>
           </button>
 
           <button
             type="button"
             aria-label="Toggle menu"
             onClick={() => setMobileMenuOpen((open) => !open)}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f8f1f1] text-[#c94708] lg:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f8f1f1] text-[#c94708] hover:bg-[#ede5dd] transition lg:hidden"
           >
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
