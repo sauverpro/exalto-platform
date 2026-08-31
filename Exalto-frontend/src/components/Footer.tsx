@@ -52,9 +52,14 @@ export default function Footer() {
       {/* Copyright Section */}
       <div className="border-t border-[#4a4a4a]">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-6">
-          <p className="text-center text-white/70 text-sm sm:text-base">
-            © Copyright 2026 | Exalto Ltd | All right reserved.
-          </p>
+          <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-between">
+            <p className="text-white/70 text-sm sm:text-base">
+              © Copyright 2026 | Exalto Ltd | All right reserved.
+            </p>
+            <a href="/admin-login" className="text-xs text-white/20 hover:text-[#c94708]/60 transition-colors">
+              Admin Portal
+            </a>
+          </div>
         </div>
       </div>
     </footer>

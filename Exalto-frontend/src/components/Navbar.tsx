@@ -89,6 +89,7 @@ function Navbar() {
             <Link to="/about" className="py-2">About</Link>
             <Link to="/contact" className="py-2">Contact</Link>
             <Link to="/login" className="py-2">My account</Link>
+            <Link to="/admin-login" className="py-2 text-xs text-[#c94708]/60 hover:text-[#c94708] transition">Admin</Link>
           </div>
         </nav>
       )}

@@ -3,10 +3,11 @@ import sugarcaneJuice from "../assets/sugarcane juice.avif";
 const AboutPage = () => {
 	return (
 		<main className="w-full bg-[#fffdf8] text-[#2a1f1a]">
-			<section className="flex min-h-90 items-center justify-center bg-[#9b908e] px-5 pt-18 sm:min-h-112.5 sm:pt-24">
-				<div className="text-center text-white">
-					<h1 className="text-4xl font-bold sm:text-5xl">About</h1>
-					<p className="mt-5 text-base sm:text-lg">Home&nbsp; / About</p>
+<section className="flex min-h-[250px] items-center justify-center bg-[#9b908e] px-5 pb-8 pt-28 sm:min-h-[280px] sm:pt-32">
+		<div className="text-center text-white">
+			<p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.28em] text-white/75">About Exalto</p>
+			<h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">Empowering Rwanda's Digital Commerce</h1>
+			<p className="mt-4 max-w-2xl text-sm leading-6 text-white/85">Innovative technology and unwavering commitment to customer satisfaction</p>
 				</div>
 			</section>
 
