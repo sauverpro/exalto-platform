@@ -1,3 +1,5 @@
+import sugarcaneJuice from "../assets/sugarcane juice.avif";
+
 const AboutPage = () => {
 	return (
 		<main className="w-full bg-[#fffdf8] text-[#2a1f1a]">
@@ -10,13 +12,13 @@ const AboutPage = () => {
 
 			<section className="mx-auto grid max-w-6xl gap-12 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-2 lg:items-center lg:gap-20 lg:px-12">
 	{/* Image */}
-	<div className="overflow-hidden rounded-2xl bg-[#f1e6dc]">
-		<img
-			src="/images/our-story.jpg"
-			alt="Sugarcane and passion fruit juice"
-			className="h-90 w-full object-cover sm:h-115"
-		/>
-	</div>
+<div className="overflow-hidden rounded-2xl bg-[#f1e6dc]">
+  <img
+    src={sugarcaneJuice}
+    alt="Sugarcane and passion fruit juice"
+    className="h-90 w-full object-cover sm:h-115"
+  />
+</div>
 
 	{/* Content */}
 	<div>
