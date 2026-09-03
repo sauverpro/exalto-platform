@@ -9,9 +9,7 @@ use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
-	/**
-	 * Display a listing of categories.
-	 */
+    // display list of categories
 	public function index(Request $request)
 	{
 		$perPage = (int) $request->query('per_page', 15);
@@ -31,9 +29,7 @@ class CategoryController extends Controller
 		return response()->json(['success' => true, 'data' => $categories]);
 	}
 
-	/**
-	 * Store a newly created category.
-	 */
+    // store new created category
 	public function store(Request $request)
 	{
 		$v = Validator::make($request->all(), [
@@ -57,18 +53,14 @@ class CategoryController extends Controller
 		return response()->json(['success' => true, 'data' => $category], 201);
 	}
 
-	/**
-	 * Display the specified category.
-	 */
+    // Display the specified category
 	public function show(Category $category)
 	{
 		$category->load('children', 'allChildren', 'products');
 		return response()->json(['success' => true, 'data' => $category]);
 	}
 
-	/**
-	 * Update the specified category.
-	 */
+    // Update the specified category
 	public function update(Request $request, Category $category)
 	{
 		$v = Validator::make($request->all(), [
@@ -92,18 +84,14 @@ class CategoryController extends Controller
 		return response()->json(['success' => true, 'data' => $category]);
 	}
 
-	/**
-	 * Remove the specified category.
-	 */
+    // remove specified category
 	public function destroy(Category $category)
 	{
 		$category->delete();
 		return response()->json(['success' => true, 'message' => 'Category deleted']);
 	}
 
-	/**
-	 * List products for a category.
-	 */
+    // list products for a category
 	public function products(Request $request, Category $category)
 	{
 		$perPage = (int) $request->query('per_page', 15);
