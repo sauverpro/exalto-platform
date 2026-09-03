@@ -40,7 +40,7 @@ class AuthController extends Controller
     }
 
     public function Login(Request $request) {
-        // validations
+        // validations check
         $validation = Validator::make($request->all(),[
           'email' => 'required|string|email|max:255',
           'password' => 'required|string|min:8',  
@@ -52,7 +52,7 @@ class AuthController extends Controller
             ],422);
         }
 
-        // login
+        // login 
         $credentials = $request->only('email', 'password');
         try {
             if (!$token = JWTAuth::attempt($credentials)) {
