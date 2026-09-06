@@ -1,32 +1,39 @@
-# Dependencies
-node_modules
-
-# Environment variables
+/vendor/
+/public/hot
+/public/storage
+/storage/*.key
+.phpunit.result.cache
 .env
-.env.local
-
-# Build output
-dist/
-build/
-
-# Logs
-logs/
-*.log
+.env.*
+!.env.example
+/node_modules/
 npm-debug.log*
 yarn-debug.log*
-pnpm-debug.log*
-
-# Prisma generated files (optional)
-prisma/dev.db
-prisma/dev.db-journal
-
-# OS files
+yarn-error.log*
+/.idea/
+/.vscode/
+*.sublime-project
+*.sublime-workspace
 .DS_Store
 Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-
-# TypeScript cache
-*.tsbuildinfo
+/storage/logs/*.log
+*.log
+*.sql
+*.sqlite
+/public/build/
+/dist/
+/.cache/
+/.parcel-cache/
+/.vite/
+/build/
+/out/
+composer.phar
+/.env.local
+/.env.testing
+/.env.backup
+/.sass-cache
+/.cache-loader
+Homestead.json
+Homestead.yaml
+_ide_helper.php
+.phpactor.json
