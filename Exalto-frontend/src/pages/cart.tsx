@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { useCart } from "../context/CartContext";
 
@@ -6,6 +6,7 @@ const formatPrice = (price: number) => `Fr ${price.toLocaleString()}`;
 
 export default function CartPage() {
   const { items, subtotal, updateQuantity, removeFromCart } = useCart();
+  const navigate = useNavigate();
 
   return (
     <main className="min-h-screen bg-[#fffdf8] px-5 pb-20 pt-32 text-[#2a1f1a] sm:px-8 lg:px-12">
@@ -47,7 +48,7 @@ export default function CartPage() {
               <div className="mt-6 flex justify-between text-sm"><span>Subtotal</span><strong>{formatPrice(subtotal)}</strong></div>
               <div className="mt-3 flex justify-between border-b border-[#ded5cd] pb-5 text-sm"><span>Delivery</span><span>Calculated at checkout</span></div>
               <div className="mt-5 flex justify-between text-lg font-black"><span>Total</span><span>{formatPrice(subtotal)}</span></div>
-              <button type="button" className="mt-7 w-full bg-[#c94708] px-5 py-3 text-sm font-bold text-white hover:bg-[#9f3506]">Proceed to checkout</button>
+              <button type="button" onClick={() => navigate("/login")} className="mt-7 w-full bg-[#c94708] px-5 py-3 text-sm font-bold text-white hover:bg-[#9f3506]">Proceed to checkout</button>
               <Link to="/shop" className="mt-4 block text-center text-sm font-semibold text-[#c94708]">Continue shopping</Link>
             </aside>
           </div>
