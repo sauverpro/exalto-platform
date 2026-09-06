@@ -10,17 +10,22 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'slug', 'price', 'description', 'is_features'];
+    protected $fillable = ['name', 'slug', 'price', 'description', 'is_featured','image', 'category_id','status'];
 
     protected $casts = [
         'price' => 'decimal:2',
         'is_features' => 'boolean',
+       
+        
     ];
 
     // Get all categories associated with this product
-    public function categories(): BelongsToMany
-    {
-        return $this->belongsToMany(Category::class);
+    // public function categories(): BelongsTo
+    // {
+    //     return $this->belongsTo(Category::class);
+    // }
+    public function categories(){
+        return $this->belongsTo('App\\Models\\Category');
     }
 
     public function inventory()
