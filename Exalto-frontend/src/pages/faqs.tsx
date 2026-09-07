@@ -64,7 +64,7 @@ export default function FAQsPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c94708]">Help Centre</p>
           <h1 className="mt-3 text-4xl font-black text-[#251c18] sm:text-5xl">Frequently Asked Questions</h1>
           <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[#77716d]">
-            Find answers to common questions about our products, orders, payments, and more. Can't find what you're looking for? Contact our team.
+            Find answers to common questions about our products, orders, payments, and more. Can't find what you're looking for? Contact our team
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             {FAQ_GROUPS.map(({ group }) => (

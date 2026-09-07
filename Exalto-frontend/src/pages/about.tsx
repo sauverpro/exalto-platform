@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { Leaf, Award, Globe, Heart, ChevronRight, CheckCircle2 } from "lucide-react";
-import sugarcaneJuice from "../assets/sugarcane juice.avif";
-import passionJuice from "../assets/passion-juice.jpg";
+import sugarcaneJuice from "../assets/sugarcane-wine.jpg";
 
 const STATS = [
   { value: "100%", label: "Natural Ingredients" },
@@ -174,7 +173,7 @@ const AboutPage = () => {
               <h3 className="mt-3 text-2xl font-black text-[#251c18] sm:text-3xl">Global Recognition</h3>
               <div className="my-5 h-px bg-[#eadfce]" />
               <p className="leading-8 text-[#6d6b69]">
-                To be a globally recognized leader in the creation of innovative, natural beverages — showcasing the quality and potential of Rwandan-sourced ingredients on the world stage.
+                To be a globally recognized leader in the creation of innovative, natural beverages showcasing the quality and potential of Rwandan sourced ingredients on the world stage.
               </p>
             </div>
             <div className="relative overflow-hidden rounded-2xl bg-[#c94708] p-8 shadow-[0_8px_30px_rgba(201,71,8,0.3)] sm:p-10">
@@ -183,7 +182,7 @@ const AboutPage = () => {
               <h3 className="mt-3 text-2xl font-black text-white sm:text-3xl">Sustainable Excellence</h3>
               <div className="my-5 h-px bg-white/20" />
               <p className="leading-8 text-white/85">
-                To produce and supply superior natural wines and juices using innovative, sustainable manufacturing processes — creating value for local farming partners and delivering healthy products to customers worldwide.
+                To produce and supply superior natural wines and juices using innovative, sustainable manufacturing processes, while creating value for our local farming partners and delivering refreshing, healthy products to our customers worldwide.
               </p>
             </div>
           </div>
@@ -225,53 +224,7 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* Product showcase */}
-      <section className="bg-[#f3efe9] px-5 py-20 sm:px-8 sm:py-24">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-14 text-center">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#c94708]">What We Make</p>
-            <h2 className="mt-4 text-4xl font-black text-[#251c18] sm:text-5xl">Our Products</h2>
-          </div>
-          <div className="grid gap-8 md:grid-cols-2">
-            {[
-              {
-                img: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=900&q=80",
-                name: "Vicas Sugarcane Wine",
-                tag: "Natural Wine",
-                desc: "A smooth, vibrant wine crafted from Rwanda's finest sugarcane. Rich in flavour, low in additives.",
-                price: "Fr 12,000",
-              },
-              {
-                img: passionJuice,
-                name: "La Vie Passion Juice",
-                tag: "Fresh Juice",
-                desc: "Cold-pressed from ripe, locally sourced passion fruits. Tangy, aromatic, and intensely flavourful.",
-                price: "Fr 9,000",
-              },
-            ].map((p) => (
-              <article key={p.name} className="group overflow-hidden rounded-2xl border border-[#eadfce] bg-white shadow-sm transition hover:shadow-[0_12px_40px_rgba(169,67,13,0.12)]">
-                <div className="relative h-64 overflow-hidden sm:h-72">
-                  <img src={p.img} alt={p.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
-                  <span className="absolute left-4 top-4 rounded-full bg-[#c94708] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-white">
-                    {p.tag}
-                  </span>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-[#251c18]">{p.name}</h3>
-                  <p className="mt-2 text-sm leading-7 text-[#77716d]">{p.desc}</p>
-                  <div className="mt-4 flex items-center justify-between">
-                    <span className="text-lg font-black text-[#c94708]">{p.price}</span>
-                    <Link to="/shop" className="flex items-center gap-1 text-sm font-bold text-[#c94708] hover:underline">
-                      View in Shop <ChevronRight size={14} />
-                    </Link>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
+      
       {/* CTA */}
       <section
         className="relative overflow-hidden px-5 py-24 sm:px-8 sm:py-32"

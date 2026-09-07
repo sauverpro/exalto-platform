@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Heart, Search, ShoppingCart, Menu, X, UserRound } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { useFavorites } from '../context/FavoritesContext'
+import logoImage from '../assets/logo image.png'
 
 function Navbar() {
   const [navSolid, setNavSolid] = useState(false)
@@ -27,7 +28,7 @@ function Navbar() {
     <header className={`fixed top-0 left-0 w-full z-40 transition-all duration-300 ${navSolid || mobileMenuOpen ? 'bg-white shadow-md' : 'bg-transparent'}`}>
       <div className="mx-auto flex h-[72px] sm:h-[88px] items-center justify-between max-w-[1400px] px-5 sm:px-8 lg:px-12">
         <Link to="/" className="flex items-center gap-2.5" aria-label="Exalto home">
-          <img src="/assets/logo.svg" alt="Exalto" className="h-9 sm:h-12 w-auto" />
+          <img src={logoImage} alt="Exalto" className="h-9 sm:h-12 w-auto" />
         </Link>
 
         {/* Desktop nav */}

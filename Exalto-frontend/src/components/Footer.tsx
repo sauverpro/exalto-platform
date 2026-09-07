@@ -1,40 +1,19 @@
 import { Link } from "react-router-dom";
 import { MapPin, Phone, Mail } from "lucide-react";
+import logoImage from "../assets/logo image.png";
 
 export default function Footer() {
   return (
     <footer className="bg-[#1a1008] text-white">
 
-      {/* Newsletter */}
-      <div className="border-b border-[#2a1f1a] bg-[#c94708]">
-        <div className="mx-auto flex max-w-[1400px] flex-col items-center justify-between gap-6 px-5 py-8 sm:flex-row sm:px-8 lg:px-12">
-          <div>
-            <p className="text-lg font-black text-white">Stay Updated</p>
-            <p className="text-sm text-white/80">Get the latest products, offers, and news from Exalto.</p>
-          </div>
-          <form className="flex w-full max-w-md gap-2" onSubmit={(e) => e.preventDefault()}>
-            <input
-              type="email"
-              placeholder="Enter your email address"
-              className="flex-1 bg-white/15 px-4 py-3 text-sm text-white placeholder-white/60 outline-none focus:bg-white/20 border border-white/20 focus:border-white/50"
-            />
-            <button type="submit" className="bg-[#251c18] px-5 py-3 text-sm font-bold text-white hover:bg-black transition flex-shrink-0">
-              Subscribe
-            </button>
-          </form>
-        </div>
-      </div>
-
       {/* Main footer */}
-      <div className="mx-auto max-w-[1400px] px-5 py-16 sm:px-8 lg:px-12">
-        <div className="grid grid-cols-2 gap-10 md:grid-cols-4 lg:gap-16">
+      <div className="mx-auto max-w-[1400px] px-5 py-16 text-left sm:px-8 lg:px-12">
+        <div className="grid grid-cols-2 items-start gap-10 md:grid-cols-4 lg:gap-16">
 
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2.5 mb-5">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#c94708]">
-                <span className="text-base font-black text-white">E</span>
-              </div>
+              <img src={logoImage} alt="Exalto" className="h-10 w-10 object-contain" />
               <span className="text-lg font-black text-white">EXALTO</span>
             </div>
             <p className="text-sm leading-7 text-white/50">

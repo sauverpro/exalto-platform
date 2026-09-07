@@ -52,9 +52,7 @@ export default function WholesalePage() {
             <p className="mt-6 max-w-lg text-base leading-7 text-white/70">
               Partner with Exalto for reliable bulk supply of premium natural beverages. Competitive pricing, flexible terms, and dedicated support for your business.
             </p>
-            <a href="#apply" className="mt-8 inline-flex items-center gap-2 bg-[#c94708] px-8 py-4 text-sm font-bold text-white hover:bg-[#9f3506] transition">
-              Open an Account <ChevronRight size={16} />
-            </a>
+          
           </div>
         </div>
       </section>

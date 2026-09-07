@@ -37,21 +37,16 @@ function HomePage() {
           backgroundPosition: "center",
         }}
       >
-        <div className="relative z-10 mx-auto w-full max-w-[1400px] px-5 py-32 sm:px-12 lg:px-16">
-          <div className="max-w-2xl">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#c94708]/30 bg-[#c94708]/10 px-4 py-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#c94708]" />
-              <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c94708]">Rwanda's Premier Fresh Produce</span>
-            </div>
-            <h1 className="text-5xl font-black leading-[1.0] tracking-tight text-white sm:text-7xl lg:text-8xl">
-              EXALTO<br />
-              <span className="text-[#c94708]">FRESH</span><br />
-              PRODUCE
+        <div className="relative z-10 mx-auto flex w-full max-w-[1400px] justify-center px-5 py-32 text-center sm:px-12 lg:px-16">
+          <div className="flex max-w-none flex-col items-center">
+            
+            <h1 className="whitespace-nowrap text-4xl font-black leading-[1.0] tracking-tight text-white sm:text-6xl lg:text-8xl">
+              EXALTO <span className="text-[#c94708]">FRESH</span> PRODUCE
             </h1>
-            <p className="mt-6 max-w-lg text-base leading-7 text-white/70 sm:text-lg">
+            <p className="mt-6 max-w-3xl text-base leading-7 text-white/70 sm:text-lg">
               Premium natural beverages and fresh produce from Rwanda's finest farms. Supplying local businesses, wholesale buyers, and international export partners.
             </p>
-            <div className="mt-10 flex flex-wrap gap-4">
+            <div className="mt-10 flex flex-wrap justify-center gap-4">
               <Link
                 to="/shop"
                 className="inline-flex items-center gap-2 bg-[#c94708] px-8 py-4 text-sm font-bold text-white shadow-[0_8px_30px_rgba(201,71,8,0.4)] transition hover:bg-[#9f3506]"
@@ -65,7 +60,7 @@ function HomePage() {
                 Wholesale Enquiry
               </Link>
             </div>
-            <div className="mt-12 flex flex-wrap gap-8">
+            <div className="mt-12 flex flex-wrap justify-center gap-8">
               {[["500+", "Happy Clients"], ["100%", "Natural"], ["2+", "Products"], ["Rwanda", "Origin"]].map(([val, label]) => (
                 <div key={label}>
                   <p className="text-2xl font-black text-[#c94708]">{val}</p>
@@ -75,17 +70,12 @@ function HomePage() {
             </div>
           </div>
         </div>
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">Scroll</span>
-          <div className="h-8 w-px bg-gradient-to-b from-white/40 to-transparent" />
-        </div>
       </section>
 
       {/* Announcement bar */}
       <div className="bg-[#c94708] px-5 py-3 text-center">
         <p className="text-xs font-semibold text-white">
-          🌿 Free delivery on orders above Fr 20,000 in Kigali &nbsp;·&nbsp; Export inquiries welcome &nbsp;·&nbsp;
+           Free delivery on orders in Kigali &nbsp;·&nbsp; Export inquiries welcome &nbsp;·&nbsp;
           <Link to="/wholesale" className="underline hover:no-underline">Open a wholesale account →</Link>
         </p>
       </div>
@@ -151,7 +141,7 @@ function HomePage() {
               View all products <ArrowRight size={14} />
             </Link>
           </div>
-          <div className="grid gap-px border border-[#eee8e2] bg-[#eee8e2] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-4 border border-[#eee8e2] bg-white sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -174,17 +164,16 @@ function HomePage() {
           backgroundPosition: "center",
         }}
       >
-        <div className="mx-auto grid max-w-[1400px] items-center gap-12 lg:grid-cols-2">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c94708]">For Business Buyers</p>
-            <h2 className="mt-4 text-4xl font-black leading-tight text-white sm:text-5xl lg:text-6xl">
-              Wholesale &<br />
-              <span className="text-[#c94708]">Export Solutions</span>
+        <div className="mx-auto flex max-w-[1400px] justify-center px-5 text-center">
+          <div className="max-w-4xl">
+            <p className="whitespace-nowrap text-xs font-semibold uppercase tracking-[0.2em] text-[#c94708]">For Business Buyers</p>
+            <h2 className="mt-4 whitespace-nowrap text-4xl font-black leading-tight text-white sm:text-5xl lg:text-6xl">
+              Wholesale & <span className="text-[#c94708]">Export Solutions</span>
             </h2>
-            <p className="mt-6 max-w-lg text-base leading-7 text-white/70">
+            <p className="mx-auto mt-6 max-w-3xl text-base leading-7 text-white/70">
               We supply restaurants, hotels, supermarkets, and international distributors with premium Rwandan beverages. Competitive bulk pricing, flexible delivery schedules, and dedicated account management.
             </p>
-            <div className="mt-8 flex flex-wrap gap-4">
+            <div className="mt-8 flex flex-wrap justify-center gap-4">
               <Link to="/wholesale" className="inline-flex items-center gap-2 bg-[#c94708] px-7 py-3.5 text-sm font-bold text-white hover:bg-[#9f3506] transition">
                 Open Wholesale Account <ChevronRight size={16} />
               </Link>
@@ -192,19 +181,6 @@ function HomePage() {
                 Export Enquiry
               </Link>
             </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            {[
-              { val: "B2B", label: "Business Pricing" },
-              { val: "MOQ", label: "Flexible Minimums" },
-              { val: "24h", label: "Quote Turnaround" },
-              { val: "Global", label: "Export Ready" },
-            ].map(({ val, label }) => (
-              <div key={label} className="rounded-2xl border border-[#3d291c] bg-[#1a1008]/60 p-6 text-center">
-                <p className="text-3xl font-black text-[#c94708]">{val}</p>
-                <p className="mt-1 text-xs font-medium text-white/60">{label}</p>
-              </div>
-            ))}
           </div>
         </div>
       </section>
@@ -243,10 +219,10 @@ function HomePage() {
       {/* CTA */}
       <section className="bg-[#c94708] px-5 py-16 sm:px-8 sm:py-20">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-3xl font-black text-white sm:text-4xl lg:text-5xl">
+          <h2 className="whitespace-nowrap text-3xl font-black text-white sm:text-4xl lg:text-5xl">
             Ready to Order?
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-base text-white/80">
+          <p className="mx-auto mt-4 max-w-none whitespace-nowrap text-base text-white/80">
             Create your account today and start ordering Rwanda's finest natural beverages. Fast delivery, easy checkout, and dedicated support.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
