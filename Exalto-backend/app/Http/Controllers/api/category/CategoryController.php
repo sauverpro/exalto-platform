@@ -3,100 +3,53 @@
 namespace App\Http\Controllers\api\category;
 
 use App\Http\Controllers\Controller;
-use App\Models\Categories;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-
-class CategoryController extends Controller
-{
-    // display list of categories
-	public function index(Request $request)
-	{
-		$perPage = (int) $request->query('per_page', 15);
-
-		$query = Category::query()->with('children');
-
-		if ($search = $request->query('q')) {
-			$query->where('name', 'like', "%{$search}%")->orWhere('slug', 'like', "%{$search}%");
-		}
-
-		if ($parent = $request->query('parent_id')) {
-			$query->where('parent_id', $parent);
-		}
-
-		$categories = $query->paginate(max(1, $perPage));
-
-		return response()->json(['success' => true, 'data' => $categories]);
+use Illuminate\Support\Facades\Auth;
+class CategoryController extends Controller {
+	public function GetAllCategories (Request $request) {
+		$categories = Category::All();
+		return response()->json(['status'=>true, 'message'=>'All Categories', 'data'=>$categories], 200);
 	}
 
-    // store new created category
-	public function store(Request $request)
-	{
-		$v = Validator::make($request->all(), [
-			'name' => 'required|string|max:191',
-			'slug' => 'nullable|string|max:191|unique:categories,slug',
-			'description' => 'nullable|string',
-			'parent_id' => 'nullable|exists:categories,id',
+	// function to store category
+	public function StoreCategory (Request $request) {
+		// check if logged in user is admin
+        $user = Auth::user();
+        if($user->role !=="admin"){
+            return response()->json(['status'=>false, 'message'=>'Unauthorized'],403);       
+            
+        }
+		$validator = Validator::make($request->all(), [
+			'name' => 'required|string|max:255',
 		]);
-
-		if ($v->fails()) {
-			return response()->json(['success' => false, 'errors' => $v->errors()], 422);
+		if ($validator->fails())
+		{
+			return response()->json(['status'=>false, 'message'=>'Validation Error', 'errors'=>$validator->errors()], 422);
 		}
-
-		$data = $v->validated();
-		if (empty($data['slug'])) {
-			$data['slug'] = str()->slug($data['name']);
-		}
-
-		$category = Category::create($data);
-
-		return response()->json(['success' => true, 'data' => $category], 201);
-	}
-
-    // Display the specified category
-	public function show(Category $category)
-	{
-		$category->load('children', 'allChildren', 'products');
-		return response()->json(['success' => true, 'data' => $category]);
-	}
-
-    // Update the specified category
-	public function update(Request $request, Category $category)
-	{
-		$v = Validator::make($request->all(), [
-			'name' => 'sometimes|required|string|max:191',
-			'slug' => "nullable|string|max:191|unique:categories,slug,{$category->id}",
-			'description' => 'nullable|string',
-			'parent_id' => 'nullable|exists:categories,id',
+		$category = Category::create([
+			'name' => $request->name,
+			'slug' => \Str::slug($request->name, '-')
 		]);
-
-		if ($v->fails()) {
-			return response()->json(['success' => false, 'errors' => $v->errors()], 422);
-		}
-
-		$data = $v->validated();
-		if (array_key_exists('name', $data) && empty($data['slug'])) {
-			$data['slug'] = str()->slug($data['name']);
-		}
-
-		$category->update($data);
-
-		return response()->json(['success' => true, 'data' => $category]);
+		return response()->json(['status'=>true, 'message'=>'Category created successfully', 'data'=>$category], 201);
 	}
-
-    // remove specified category
-	public function destroy(Category $category)
-	{
+	// delete category and disable all products in that category
+	public function DeleteCategory (Request $request, $id) {
+		// check if logged in user is admin
+        $user = Auth::user();
+        if($user->role !=="admin"){
+            return response()->json(['status'=>false, 'message'=>'Unauthorized'],403);       
+            
+        }
+		$category = Category::find($id);
+		if (!$category) {
+			return response()->json(['status'=>false, 'message'=>'Category not found'], 404);
+		}
+		// disable all products in that category
+		$category->products()->update(['status' => 'disabled']);
 		$category->delete();
-		return response()->json(['success' => true, 'message' => 'Category deleted']);
-	}
-
-    // list products for a category
-	public function products(Request $request, Category $category)
-	{
-		$perPage = (int) $request->query('per_page', 15);
-		$products = $category->products()->paginate(max(1, $perPage));
-		return response()->json(['success' => true, 'data' => $products]);
+		return response()->json(['status'=>true, 'message'=>'Category deleted successfully'], 200);
 	}
 }
 

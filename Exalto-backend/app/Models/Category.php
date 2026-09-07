@@ -31,8 +31,12 @@ class Category extends Model
     }
 
     // get product from a specific category
-    public function products(): BelongsToMany
+    // public function products(): BelongsToMany
+    // {
+    //     return $this->belongsToMany(Product::class);
+    // }
+    public function products()
     {
-        return $this->belongsToMany(Product::class);
+        return $this->hasMany('App\\Models\\Product');
     }
 }
