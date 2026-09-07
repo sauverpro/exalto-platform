@@ -48,7 +48,7 @@ export default function CartPage() {
               <div className="mt-6 flex justify-between text-sm"><span>Subtotal</span><strong>{formatPrice(subtotal)}</strong></div>
               <div className="mt-3 flex justify-between border-b border-[#ded5cd] pb-5 text-sm"><span>Delivery</span><span>Calculated at checkout</span></div>
               <div className="mt-5 flex justify-between text-lg font-black"><span>Total</span><span>{formatPrice(subtotal)}</span></div>
-              <button type="button" onClick={() => navigate("/login")} className="mt-7 w-full bg-[#c94708] px-5 py-3 text-sm font-bold text-white hover:bg-[#9f3506]">Proceed to checkout</button>
+              <button type="button" onClick={() => navigate("/checkout")} className="mt-7 w-full bg-[#c94708] px-5 py-3 text-sm font-bold text-white hover:bg-[#9f3506]">Proceed to checkout</button>
               <Link to="/shop" className="mt-4 block text-center text-sm font-semibold text-[#c94708]">Continue shopping</Link>
             </aside>
           </div>

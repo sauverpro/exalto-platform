@@ -3,6 +3,7 @@ import { ShoppingCart, Heart } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useFavorites } from "../context/FavoritesContext";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 interface ProductCardProps {
   product: Product;
@@ -19,11 +20,13 @@ const ProductCard = ({ product }: ProductCardProps) => {
       
       {/* Product Image */}
       <div className="relative h-[190px] w-full overflow-hidden bg-[#f8f5f1]">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="h-full w-full object-cover transition duration-300 hover:scale-105"
-        />
+        <Link to={`/product/${product.id}`}>
+          <img
+            src={product.image}
+            alt={product.name}
+            className="h-full w-full object-cover transition duration-300 hover:scale-105"
+          />
+        </Link>
         <button
           type="button"
           onClick={() => toggleFavorite(product)}
@@ -43,9 +46,11 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
       {/* Product Information */}
       <div className="border-t border-[#f0e9e3] px-4 py-4 text-left">
-        <h3 className="min-h-10 text-sm font-semibold leading-5 text-[#251c18]">
-          {product.name}
-        </h3>
+        <Link to={`/product/${product.id}`}>
+          <h3 className="min-h-10 text-sm font-semibold leading-5 text-[#251c18] hover:text-[#c94708] transition">
+            {product.name}
+          </h3>
+        </Link>
 
         <p className="mt-1 text-xs text-[#9a8c83]">{product.category}</p>
         <p className="mt-2 font-semibold text-[#c7470b]">
