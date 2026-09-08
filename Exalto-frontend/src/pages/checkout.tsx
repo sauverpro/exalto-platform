@@ -21,6 +21,19 @@ export default function CheckoutPage() {
     e.preventDefault();
     setProcessing(true);
     await new Promise((r) => setTimeout(r, 1800));
+    const newOrder = {
+      id: `EX-${new Date().getFullYear()}-${Date.now().toString().slice(-5)}`,
+      customer: delivery.name,
+      email: delivery.phone,
+      items: items.map(({ product, quantity }) => `${product.name} x ${quantity}`).join(", "),
+      total: subtotal,
+      paymentStatus: "Paid",
+      status: "Processing",
+      date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    };
+    const savedOrders = localStorage.getItem("exalto-admin-orders");
+    const orders = savedOrders ? JSON.parse(savedOrders) : [];
+    localStorage.setItem("exalto-admin-orders", JSON.stringify([...orders, newOrder]));
     setProcessing(false);
     clearCart?.();
     setStep(2);

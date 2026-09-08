@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   LogOut, Menu, X, BarChart3, ShoppingBag, Users, Settings,
@@ -15,6 +15,27 @@ const NAV_ITEMS = [
 ] as const;
 
 type Tab = (typeof NAV_ITEMS)[number]["id"];
+
+type OrderStatus = "Pending Payment" | "Paid" | "Processing" | "Packed" | "Shipped" | "Delivered" | "Cancelled";
+
+interface AdminOrder {
+  id: string;
+  customer: string;
+  email: string;
+  items: string;
+  total: number;
+  paymentStatus: "Pending" | "Paid";
+  status: OrderStatus;
+  date: string;
+}
+
+const ORDER_STATUSES: OrderStatus[] = ["Pending Payment", "Paid", "Processing", "Packed", "Shipped", "Delivered", "Cancelled"];
+
+const INITIAL_ORDERS: AdminOrder[] = [
+  { id: "EX-2026-001", customer: "Jean Doe", email: "jean@example.com", items: "La Vie Passion Juice x 3", total: 27000, paymentStatus: "Paid", status: "Processing", date: "Sep 8, 2026" },
+  { id: "EX-2026-002", customer: "Sarah Kim", email: "sarah@example.com", items: "Vicas Sugarcane Wine x 2", total: 24000, paymentStatus: "Pending", status: "Pending Payment", date: "Sep 7, 2026" },
+  { id: "EX-2026-003", customer: "David Niyonzima", email: "david@example.com", items: "Passion Juice Export Carton x 1", total: 95000, paymentStatus: "Paid", status: "Shipped", date: "Sep 5, 2026" },
+];
 
 const STATS = [
   { label: "Total Revenue", value: "Fr 21,000", change: "+12%", icon: TrendingUp, color: "text-emerald-400", bg: "bg-emerald-400/10" },
@@ -33,6 +54,15 @@ export default function AdminDashboard() {
   const [productSearch, setProductSearch] = useState("");
   const [productModalOpen, setProductModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [orders, setOrders] = useState<AdminOrder[]>(() => {
+    try {
+      const savedOrders = localStorage.getItem("exalto-admin-orders");
+      return savedOrders ? JSON.parse(savedOrders) as AdminOrder[] : INITIAL_ORDERS;
+    } catch {
+      return INITIAL_ORDERS;
+    }
+  });
+  const [orderSearch, setOrderSearch] = useState("");
   const [productForm, setProductForm] = useState({
     name: "",
     category: "Juice",
@@ -41,6 +71,10 @@ export default function AdminDashboard() {
     description: "",
     image: "",
   });
+
+  useEffect(() => {
+    localStorage.setItem("exalto-admin-orders", JSON.stringify(orders));
+  }, [orders]);
 
   if (!isAdminLoggedIn) {
     navigate("/admin-login");
@@ -114,6 +148,16 @@ export default function AdminDashboard() {
   const visibleProducts = adminProducts.filter((product) =>
     `${product.name} ${product.category} ${product.code}`.toLowerCase().includes(productSearch.toLowerCase()),
   );
+
+  const visibleOrders = orders.filter((order) =>
+    `${order.id} ${order.customer} ${order.email} ${order.items} ${order.status}`.toLowerCase().includes(orderSearch.toLowerCase()),
+  );
+
+  const updateOrderStatus = (orderId: string, status: OrderStatus) => {
+    setOrders((current) => current.map((order) => order.id === orderId
+      ? { ...order, status, paymentStatus: status === "Pending Payment" ? "Pending" : "Paid" }
+      : order));
+  };
 
   return (
     <div className={`admin-dashboard flex min-h-screen bg-[#0d0906] text-white ${lightMode ? "admin-light" : ""}`}>
@@ -353,12 +397,61 @@ export default function AdminDashboard() {
 
           {/* ORDERS */}
           {activeTab === "orders" && (
-            <div className="rounded-2xl border border-[#1e1410] bg-[#0f0a08] p-12 text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#1a1008]">
-                <ShoppingBag size={28} className="text-[#4a3d38]" />
+            <div className="overflow-hidden rounded-2xl border border-[#1e1410] bg-[#0f0a08]">
+              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#1e1410] px-6 py-5">
+                <div>
+                  <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-white">Order Management</h3>
+                  <p className="mt-1 text-xs text-[#4a3d38]">{orders.length} customer orders</p>
+                </div>
+                <input
+                  value={orderSearch}
+                  onChange={(event) => setOrderSearch(event.target.value)}
+                  placeholder="Search orders..."
+                  className="w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-2.5 text-sm text-white placeholder-[#4a3d38] outline-none focus:border-[#c94708] sm:max-w-xs"
+                />
               </div>
-              <p className="text-lg font-semibold text-white">No orders yet</p>
-              <p className="mt-2 text-sm text-[#4a3d38]">Orders will appear here once customers start purchasing.</p>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[820px]">
+                  <thead>
+                    <tr className="border-b border-[#1e1410]">
+                      {["Order", "Customer", "Total", "Payment", "Delivery Status", "Date"].map((heading) => (
+                        <th key={heading} className="px-6 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.15em] text-[#4a3d38]">{heading}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {visibleOrders.map((order) => (
+                      <tr key={order.id} className="border-b border-[#1e1410] hover:bg-[#1a1008] transition">
+                        <td className="px-6 py-4">
+                          <p className="text-sm font-bold text-white">{order.id}</p>
+                          <p className="mt-1 text-xs text-[#4a3d38]">{order.items}</p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <p className="text-sm font-semibold text-white">{order.customer}</p>
+                          <p className="mt-1 text-xs text-[#4a3d38]">{order.email}</p>
+                        </td>
+                        <td className="px-6 py-4 text-sm font-bold text-[#c94708]">Fr {order.total.toLocaleString()}</td>
+                        <td className="px-6 py-4">
+                          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${order.paymentStatus === "Paid" ? "bg-emerald-400/10 text-emerald-400" : "bg-amber-400/10 text-amber-400"}`}>
+                            {order.paymentStatus}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <select
+                            value={order.status}
+                            onChange={(event) => updateOrderStatus(order.id, event.target.value as OrderStatus)}
+                            className="rounded-lg border border-[#1e1410] bg-[#1a1008] px-3 py-2 text-xs font-semibold text-white outline-none focus:border-[#c94708]"
+                          >
+                            {ORDER_STATUSES.map((status) => <option key={status}>{status}</option>)}
+                          </select>
+                        </td>
+                        <td className="px-6 py-4 text-xs text-[#6b5e58]">{order.date}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {visibleOrders.length === 0 && <p className="px-6 py-10 text-center text-sm text-[#6b5e58]">No orders match your search.</p>}
             </div>
           )}
 
