@@ -5,7 +5,7 @@ import {
   TrendingUp, Package, Bell, ChevronRight, Edit2, Trash2, Sun, Moon,
 } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
-import { products } from "../data/product";
+import { products, type Product } from "../data/product";
 
 const NAV_ITEMS = [
   { icon: BarChart3, label: "Overview", id: "overview" },
@@ -29,6 +29,18 @@ export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [lightMode, setLightMode] = useState(false);
+  const [adminProducts, setAdminProducts] = useState<Product[]>(products);
+  const [productSearch, setProductSearch] = useState("");
+  const [productModalOpen, setProductModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [productForm, setProductForm] = useState({
+    name: "",
+    category: "Juice",
+    price: "",
+    stock: "",
+    description: "",
+    image: "",
+  });
 
   if (!isAdminLoggedIn) {
     navigate("/admin-login");
@@ -39,6 +51,69 @@ export default function AdminDashboard() {
     logoutAdmin();
     navigate("/");
   };
+
+  const openProductForm = (product?: Product) => {
+    setEditingProduct(product ?? null);
+    setProductForm(product
+      ? {
+          name: product.name,
+          category: product.category,
+          price: String(product.price),
+          stock: String(product.stock),
+          description: product.description,
+          image: product.image,
+        }
+      : {
+          name: "",
+          category: "Juice",
+          price: "",
+          stock: "",
+          description: "",
+          image: products[0]?.image ?? "",
+        });
+    setProductModalOpen(true);
+  };
+
+  const saveProduct = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const price = Number(productForm.price);
+    const stock = Number(productForm.stock);
+    if (!productForm.name.trim() || !price || stock < 0) return;
+
+    if (editingProduct) {
+      setAdminProducts((current) => current.map((product) => product.id === editingProduct.id
+        ? { ...product, ...productForm, price, stock, name: productForm.name.trim() }
+        : product));
+    } else {
+      const id = Math.max(0, ...adminProducts.map((product) => product.id)) + 1;
+      setAdminProducts((current) => [...current, {
+        ...products[0],
+        id,
+        code: `EX-CUSTOM-${id}`,
+        name: productForm.name.trim(),
+        category: productForm.category,
+        price,
+        wholesalePrice: price,
+        exportPrice: price,
+        stock,
+        description: productForm.description,
+        image: productForm.image || products[0].image,
+        images: [productForm.image || products[0].image],
+        featured: false,
+      }]);
+    }
+    setProductModalOpen(false);
+  };
+
+  const deleteProduct = (productId: number) => {
+    if (window.confirm("Delete this product from the admin list?")) {
+      setAdminProducts((current) => current.filter((product) => product.id !== productId));
+    }
+  };
+
+  const visibleProducts = adminProducts.filter((product) =>
+    `${product.name} ${product.category} ${product.code}`.toLowerCase().includes(productSearch.toLowerCase()),
+  );
 
   return (
     <div className={`admin-dashboard flex min-h-screen bg-[#0d0906] text-white ${lightMode ? "admin-light" : ""}`}>
@@ -175,7 +250,7 @@ export default function AdminDashboard() {
                   </button>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
-                  {products.map((p) => (
+                  {adminProducts.map((p) => (
                     <div key={p.id} className="flex items-center gap-4 rounded-xl border border-[#1e1410] bg-[#1a1008] p-4">
                       <img src={p.image} alt={p.name} className="h-14 w-14 rounded-lg object-cover flex-shrink-0" />
                       <div className="min-w-0">
@@ -216,9 +291,17 @@ export default function AdminDashboard() {
             <div className="rounded-2xl border border-[#1e1410] bg-[#0f0a08] overflow-hidden">
               <div className="flex items-center justify-between border-b border-[#1e1410] px-6 py-5">
                 <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-white">All Products</h3>
-                <button className="flex items-center gap-2 rounded-xl bg-[#c94708] px-4 py-2 text-xs font-bold text-white hover:bg-[#a83906] transition shadow-[0_4px_15px_rgba(201,71,8,0.3)]">
+                <button onClick={() => openProductForm()} className="flex items-center gap-2 rounded-xl bg-[#c94708] px-4 py-2 text-xs font-bold text-white hover:bg-[#a83906] transition shadow-[0_4px_15px_rgba(201,71,8,0.3)]">
                   + Add Product
                 </button>
+              </div>
+              <div className="border-b border-[#1e1410] px-6 py-4">
+                <input
+                  value={productSearch}
+                  onChange={(event) => setProductSearch(event.target.value)}
+                  placeholder="Search products..."
+                  className="w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-2.5 text-sm text-white placeholder-[#4a3d38] outline-none focus:border-[#c94708] sm:max-w-sm"
+                />
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full">
@@ -230,7 +313,7 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {products.map((p) => (
+                    {visibleProducts.map((p) => (
                       <tr key={p.id} className="border-b border-[#1e1410] hover:bg-[#1a1008] transition">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
@@ -251,10 +334,10 @@ export default function AdminDashboard() {
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            <button className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#1e1410] text-[#6b5e58] hover:border-[#c94708] hover:text-[#c94708] transition">
+                            <button onClick={() => openProductForm(p)} aria-label={`Edit ${p.name}`} className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#1e1410] text-[#6b5e58] hover:border-[#c94708] hover:text-[#c94708] transition">
                               <Edit2 size={13} />
                             </button>
-                            <button className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#1e1410] text-[#6b5e58] hover:border-red-800 hover:text-red-400 transition">
+                            <button onClick={() => deleteProduct(p.id)} aria-label={`Delete ${p.name}`} className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#1e1410] text-[#6b5e58] hover:border-red-800 hover:text-red-400 transition">
                               <Trash2 size={13} />
                             </button>
                           </div>
@@ -264,6 +347,7 @@ export default function AdminDashboard() {
                   </tbody>
                 </table>
               </div>
+              {visibleProducts.length === 0 && <p className="px-6 py-10 text-center text-sm text-[#6b5e58]">No products match your search.</p>}
             </div>
           )}
 
@@ -321,6 +405,48 @@ export default function AdminDashboard() {
           )}
         </div>
       </main>
+
+      {productModalOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 px-5 py-8">
+          <form onSubmit={saveProduct} className="max-h-full w-full max-w-2xl overflow-y-auto rounded-2xl border border-[#1e1410] bg-[#0f0a08] p-6 shadow-2xl">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-white">{editingProduct ? "Edit Product" : "Add Product"}</h2>
+              <button type="button" onClick={() => setProductModalOpen(false)} aria-label="Close product form" className="text-[#6b5e58] hover:text-white">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="text-xs font-semibold text-[#6b5e58]">Product name
+                <input required value={productForm.name} onChange={(event) => setProductForm({ ...productForm, name: event.target.value })} className="mt-2 w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" />
+              </label>
+              <label className="text-xs font-semibold text-[#6b5e58]">Category
+                <select value={productForm.category} onChange={(event) => setProductForm({ ...productForm, category: event.target.value })} className="mt-2 w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]">
+                  <option>Juice</option>
+                  <option>Natural Wine</option>
+                  <option>Gift Sets</option>
+                  <option>Export Produce</option>
+                </select>
+              </label>
+              <label className="text-xs font-semibold text-[#6b5e58]">Price
+                <input required min="1" type="number" value={productForm.price} onChange={(event) => setProductForm({ ...productForm, price: event.target.value })} className="mt-2 w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" />
+              </label>
+              <label className="text-xs font-semibold text-[#6b5e58]">Stock quantity
+                <input required min="0" type="number" value={productForm.stock} onChange={(event) => setProductForm({ ...productForm, stock: event.target.value })} className="mt-2 w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" />
+              </label>
+              <label className="text-xs font-semibold text-[#6b5e58] sm:col-span-2">Image URL
+                <input value={productForm.image} onChange={(event) => setProductForm({ ...productForm, image: event.target.value })} className="mt-2 w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" />
+              </label>
+              <label className="text-xs font-semibold text-[#6b5e58] sm:col-span-2">Description
+                <textarea rows={4} value={productForm.description} onChange={(event) => setProductForm({ ...productForm, description: event.target.value })} className="mt-2 w-full resize-y rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" />
+              </label>
+            </div>
+            <div className="mt-6 flex justify-end gap-3">
+              <button type="button" onClick={() => setProductModalOpen(false)} className="rounded-xl border border-[#1e1410] px-5 py-3 text-sm font-semibold text-[#6b5e58] hover:text-white">Cancel</button>
+              <button type="submit" className="rounded-xl bg-[#c94708] px-5 py-3 text-sm font-bold text-white hover:bg-[#a83906]">Save Product</button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
