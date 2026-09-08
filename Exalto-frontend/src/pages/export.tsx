@@ -27,6 +27,19 @@ export default function ExportPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const savedQuotations = localStorage.getItem("exalto-admin-quotations");
+    const quotations = savedQuotations ? JSON.parse(savedQuotations) : [];
+    quotations.push({
+      id: `QUO-${new Date().getFullYear()}-${Date.now().toString().slice(-5)}`,
+      company: form.company,
+      country: form.country,
+      products: form.products,
+      quantity: form.quantity || "Not specified",
+      schedule: form.delivery || "Not specified",
+      status: "New",
+      date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    });
+    localStorage.setItem("exalto-admin-quotations", JSON.stringify(quotations));
     setSubmitted(true);
   };
 
