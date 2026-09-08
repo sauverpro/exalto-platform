@@ -40,7 +40,7 @@ function HomePage() {
         <div className="relative z-10 mx-auto flex w-full max-w-[1400px] justify-center px-5 py-32 text-center sm:px-12 lg:px-16">
           <div className="flex max-w-none flex-col items-center">
             
-            <h1 className="whitespace-nowrap text-4xl font-black leading-[1.0] tracking-tight text-white sm:text-6xl lg:text-8xl">
+            <h1 className="whitespace-nowrap text-4xl font-black leading-[1.0] tracking-tight !text-white sm:text-6xl lg:text-8xl">
               EXALTO <span className="text-[#c94708]">FRESH</span> PRODUCE
             </h1>
             <p className="mt-6 max-w-3xl text-base leading-7 text-white/70 sm:text-lg">
@@ -222,7 +222,7 @@ function HomePage() {
           <h2 className="whitespace-nowrap text-3xl font-black text-white sm:text-4xl lg:text-5xl">
             Ready to Order?
           </h2>
-          <p className="mx-auto mt-4 max-w-none whitespace-nowrap text-base text-white/80">
+          <p className="mx-auto mt-4 max-w-none whitespace-normal break-words text-sm leading-6 text-white/80 sm:whitespace-nowrap sm:text-base">
             Create your account today and start ordering Rwanda's finest natural beverages. Fast delivery, easy checkout, and dedicated support.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">

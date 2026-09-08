@@ -65,8 +65,8 @@ export default function Shop() {
             <span className="font-semibold text-white">Shop</span>
           </div>
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#c94708]">From Rwanda, with care</p>
-          <h1 className="mt-2 text-4xl font-black text-white sm:text-5xl">Our Products</h1>
-          <p className="mt-3 max-w-lg text-sm text-white/60">Natural beverages crafted from Rwanda's finest ingredients. No additives, no compromise.</p>
+          <h1 className="mt-2 text-4xl font-black !text-white sm:text-5xl">Our Products</h1>
+          <p className="mx-auto mt-3 max-w-none text-center text-sm text-white/60 motion-safe:animate-pulse sm:whitespace-nowrap">Natural beverages crafted from Rwanda's finest ingredients. No additives, no compromise.</p>
         </div>
       </section>
 

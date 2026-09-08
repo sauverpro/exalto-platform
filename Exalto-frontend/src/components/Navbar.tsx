@@ -36,9 +36,9 @@ function Navbar() {
           {[
             { to: "/", label: "Home" },
             { to: "/shop", label: "Shop" },
+            { to: "/about", label: "About" },
             { to: "/wholesale", label: "Wholesale" },
             { to: "/export", label: "Export" },
-            { to: "/about", label: "About" },
             { to: "/contact", label: "Contact" },
           ].map(({ to, label }) => (
             <Link
@@ -113,9 +113,9 @@ function Navbar() {
             {[
               { to: "/", label: "Home" },
               { to: "/shop", label: "Shop" },
+              { to: "/about", label: "About" },
               { to: "/wholesale", label: "Wholesale" },
               { to: "/export", label: "Export" },
-              { to: "/about", label: "About" },
               { to: "/contact", label: "Contact" },
             ].map(({ to, label }) => (
               <Link

@@ -2,12 +2,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronRight, CheckCircle2, Package, Clock, Users, TrendingUp } from "lucide-react";
 
-const TIERS = [
-  { name: "Starter", min: "Fr 50,000", discount: "5%", features: ["Minimum order Fr 50,000", "Standard delivery", "Email support", "Monthly invoicing"] },
-  { name: "Business", min: "Fr 150,000", discount: "12%", features: ["Minimum order Fr 150,000", "Priority delivery", "Dedicated account manager", "Weekly invoicing", "Custom packaging available"], highlight: true },
-  { name: "Enterprise", min: "Fr 500,000+", discount: "20%", features: ["Custom minimum order", "Same-day delivery", "24/7 support", "Daily invoicing", "Export documentation", "Cold chain logistics"] },
-];
-
 const BENEFITS = [
   { icon: Package, title: "Bulk Pricing", desc: "Significant discounts on large orders with flexible minimum order quantities." },
   { icon: Clock, title: "Scheduled Deliveries", desc: "Set recurring delivery schedules that fit your business operations." },
@@ -28,15 +22,7 @@ export default function WholesalePage() {
     <main className="w-full bg-[#fffdf8] text-[#2a1f1a]">
 
       {/* Hero */}
-      <section
-        className="relative flex min-h-[480px] items-center overflow-hidden px-5 pb-16 pt-36 sm:px-8"
-        style={{
-          backgroundImage:
-            "linear-gradient(105deg, rgba(10,8,5,0.94) 0%, rgba(30,15,5,0.85) 60%, rgba(10,8,5,0.60) 100%), url('https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=2000&q=85')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
+      <section className="relative flex min-h-[480px] items-center overflow-hidden bg-[#251c18] px-5 pb-16 pt-36 sm:px-8">
         <div className="mx-auto max-w-[1400px] w-full">
           <div className="flex items-center gap-2 mb-5 text-xs text-white/50">
             <Link to="/" className="hover:text-white">Home</Link>
@@ -45,11 +31,11 @@ export default function WholesalePage() {
           </div>
           <div className="max-w-2xl">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#c94708]">For Business Buyers</p>
-            <h1 className="mt-4 text-5xl font-black leading-tight text-white sm:text-6xl lg:text-7xl">
+            <h1 className="mt-4 text-5xl font-black leading-tight !text-white sm:text-6xl lg:text-7xl">
               Wholesale<br />
               <span className="text-[#c94708]">Solutions</span>
             </h1>
-            <p className="mt-6 max-w-lg text-base leading-7 text-white/70">
+            <p className="mt-3 max-w-3xl text-[11px] leading-4 text-white/70 sm:whitespace-nowrap sm:text-xs">
               Partner with Exalto for reliable bulk supply of premium natural beverages. Competitive pricing, flexible terms, and dedicated support for your business.
             </p>
           
@@ -75,48 +61,7 @@ export default function WholesalePage() {
       </section>
 
       {/* Pricing Tiers */}
-      <section className="bg-[#f3efe9] px-5 py-20 sm:px-8 sm:py-24">
-        <div className="mx-auto max-w-[1400px]">
-          <div className="mb-12 text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c94708]">Wholesale Pricing</p>
-            <h2 className="mt-2 text-3xl font-black text-[#251c18] sm:text-4xl">Choose Your Tier</h2>
-            <p className="mx-auto mt-3 max-w-xl text-sm text-[#77716d]">All tiers include access to our full product catalog. Discounts applied automatically at checkout.</p>
-          </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            {TIERS.map(({ name, min, discount, features, highlight }) => (
-              <div
-                key={name}
-                className={`relative rounded-2xl p-8 ${highlight ? "bg-[#c94708] shadow-[0_20px_60px_rgba(201,71,8,0.35)]" : "border border-[#eadfce] bg-white"}`}
-              >
-                {highlight && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#251c18] px-4 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-white">
-                    Most Popular
-                  </span>
-                )}
-                <p className={`text-xs font-bold uppercase tracking-[0.15em] ${highlight ? "text-white/70" : "text-[#c94708]"}`}>{name}</p>
-                <p className={`mt-3 text-4xl font-black ${highlight ? "text-white" : "text-[#251c18]"}`}>{discount}</p>
-                <p className={`text-sm ${highlight ? "text-white/70" : "text-[#77716d]"}`}>discount on all orders</p>
-                <p className={`mt-1 text-xs font-semibold ${highlight ? "text-white/60" : "text-[#9a8a82]"}`}>Starting from {min}</p>
-                <div className={`my-6 h-px ${highlight ? "bg-white/20" : "bg-[#eadfce]"}`} />
-                <ul className="space-y-3">
-                  {features.map((f) => (
-                    <li key={f} className={`flex items-start gap-2.5 text-sm ${highlight ? "text-white/90" : "text-[#6d6b69]"}`}>
-                      <CheckCircle2 size={16} className={`mt-0.5 flex-shrink-0 ${highlight ? "text-white" : "text-[#c94708]"}`} />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <a
-                  href="#apply"
-                  className={`mt-8 block w-full py-3 text-center text-sm font-bold transition ${highlight ? "bg-white text-[#c94708] hover:bg-[#f3efe9]" : "border border-[#c94708] text-[#c94708] hover:bg-[#c94708] hover:text-white"}`}
-                >
-                  Apply Now
-                </a>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      
 
       {/* Application Form */}
       <section id="apply" className="bg-white px-5 py-20 sm:px-8 sm:py-24">

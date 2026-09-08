@@ -51,9 +51,8 @@ export default function ExportPage() {
           </div>
           <div className="max-w-2xl">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#c94708]">International Business</p>
-            <h1 className="mt-4 text-5xl font-black leading-tight text-white sm:text-6xl lg:text-7xl">
-              Export<br />
-              <span className="text-[#c94708]">Business</span>
+            <h1 className="mt-4 whitespace-nowrap text-5xl font-black leading-tight !text-white sm:text-6xl lg:text-7xl">
+              Export <span className="text-[#c94708]">Business</span>
             </h1>
             <p className="mt-6 max-w-lg text-base leading-7 text-white/70">
               Exalto exports premium Rwandan natural beverages to international markets. We handle all documentation, cold chain logistics, and customs clearance.

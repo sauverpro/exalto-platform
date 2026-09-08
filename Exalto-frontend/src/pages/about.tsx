@@ -58,7 +58,7 @@ const AboutPage = () => {
           <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#c94708]">
             About Exalto
           </p>
-          <h1 className="text-4xl font-black leading-tight text-white sm:text-6xl lg:text-7xl">
+          <h1 className="text-4xl font-black leading-tight !text-white sm:text-6xl lg:text-7xl">
             Crafted with Purpose,<br />
             <span className="text-[#c94708]">Rooted in Rwanda</span>
           </h1>
