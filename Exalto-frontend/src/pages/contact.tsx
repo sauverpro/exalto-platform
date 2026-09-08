@@ -2,9 +2,9 @@ import { Clock3, Mail, MapPin, Phone } from "lucide-react";
 
 const ContactPage = () => {
 	return (
-		<main className="w-full bg-[#fffdfb] text-[#251c18]">
-			<section className="bg-[linear-gradient(110deg,#c77b5c,#607fe0)] px-5 pb-10 pt-28 text-center text-white sm:pb-12">
-				<p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-white/75">We are here to help</p>
+		<main className="w-full bg-[#fffdf8] text-[#2a1f1a]">
+			<section className="bg-[linear-gradient(135deg,#251c18,#3d291c)] px-5 pb-10 pt-28 text-center text-white sm:pb-12">
+				<p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#c94708]">We are here to help</p>
 				<h1 className="mt-3 text-4xl font-bold sm:text-5xl">Contact</h1>
 				<p className="mx-auto mt-3 max-w-md text-xs leading-5 text-white/85">We&apos;d love to hear from you. Get in touch with our team for any questions or support.</p>
 			</section>
