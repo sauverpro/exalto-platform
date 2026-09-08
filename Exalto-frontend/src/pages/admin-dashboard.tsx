@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   LogOut, Menu, X, BarChart3, ShoppingBag, Users, Settings,
-  TrendingUp, Package, Bell, ChevronRight, Edit2, Trash2,
+  TrendingUp, Package, Bell, ChevronRight, Edit2, Trash2, Sun, Moon,
 } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
 import { products } from "../data/product";
@@ -28,6 +28,7 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>("overview");
+  const [lightMode, setLightMode] = useState(false);
 
   if (!isAdminLoggedIn) {
     navigate("/admin-login");
@@ -40,7 +41,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#0d0906] text-white">
+    <div className={`admin-dashboard flex min-h-screen bg-[#0d0906] text-white ${lightMode ? "admin-light" : ""}`}>
       {/* Sidebar */}
       <aside
         className={`${sidebarOpen ? "w-64" : "w-[72px]"} fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-[#1e1410] bg-[#0f0a08] transition-all duration-300`}
@@ -119,6 +120,14 @@ export default function AdminDashboard() {
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => setLightMode(!lightMode)}
+              aria-label={lightMode ? "Switch to dark mode" : "Switch to light mode"}
+              title={lightMode ? "Dark mode" : "Light mode"}
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#1e1410] bg-[#1a1008] text-[#6b5e58] hover:text-white transition"
+            >
+              {lightMode ? <Moon size={16} /> : <Sun size={16} />}
+            </button>
             <button className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-[#1e1410] bg-[#1a1008] text-[#6b5e58] hover:text-white transition">
               <Bell size={16} />
               <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-[#c94708]" />

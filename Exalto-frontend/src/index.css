@@ -70,6 +70,44 @@ body {
   margin: 0;
 }
 
+.admin-light {
+  background-color: #f7f3ef;
+  color: #251c18;
+}
+
+.admin-light [class*="bg-[#0d0906]"],
+.admin-light [class*="bg-[#0f0a08]"] {
+  background-color: #f7f3ef;
+}
+
+.admin-light [class*="bg-[#1a1008]"] {
+  background-color: #ffffff;
+}
+
+.admin-light [class*="border-[#1e1410]"],
+.admin-light [class*="border-[#2a1f1a]"] {
+  border-color: #e5d9cf;
+}
+
+.admin-light [class*="text-white"] {
+  color: #251c18;
+}
+
+.admin-light [class*="bg-[#c94708]"] [class*="text-white"],
+.admin-light [class*="bg-[#c94708]"].text-white {
+  color: #ffffff;
+}
+
+.admin-light [class*="text-[#6b5e58]"],
+.admin-light [class*="text-[#4a3d38]"],
+.admin-light [class*="text-[#3d3028]"] {
+  color: #77716d;
+}
+
+.admin-light [class*="hover\\:bg-[#1e1410]"]:hover {
+  background-color: #f0e8e1;
+}
+
 h1,
 h2 {
   font-family: var(--heading);
