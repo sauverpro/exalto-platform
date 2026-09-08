@@ -10,7 +10,7 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'slug', 'price', 'description', 'is_featured','image', 'category_id','status'];
+    protected $fillable = ['name', 'slug', 'price', 'description', 'is_featured','image', 'category_id','status', "stock_quantity", "packaging_type", "country_of_origin", "quality_type", "unit"];
 
     protected $casts = [
         'price' => 'decimal:2',

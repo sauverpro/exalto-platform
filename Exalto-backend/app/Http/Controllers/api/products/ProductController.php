@@ -23,6 +23,11 @@ class ProductController extends Controller
             'description' => 'required|string',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'category_id' => 'required|exists:categories,id',
+            'stock_quantity' => 'required',
+            'packaging_type' => 'required',
+            'country_of_origin' => 'required',
+            'unit' => 'required',
+            'quality_type' => 'required',
         ]);
         // check if validation fails
         if ($validator->fails()) {
@@ -61,6 +66,12 @@ class ProductController extends Controller
             'category_id' => $request->category_id,
             'status' => $request->status ?? 'active', // default to 'active' if not provided
             'is_featured' => $request->is_featured ?? false, // default to false if not provided
+            'stock_quantity' => $request->stock_quantity,
+            'packaging_type' => $request->packaging_type,
+            'unit' => $request->unit,
+            'country_of_origin' => $request->country_of_origin,
+            'quality_type' => $request->quality_type,
+
         ]);
         return response()->json(['status' => true, 'message' => 'Product created successfully', 'data' => $product], 201);
     }
@@ -83,6 +94,12 @@ class ProductController extends Controller
             'description' => 'sometimes|required|string',
             'image' => 'sometimes|required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'category_id' => 'sometimes|required|exists:categories,id',
+            'stock_quantity' => 'required',
+            'packaging_type' => 'required',
+            'county_of_origin' => 'required',
+            'unit' => 'required',
+            'quality_type' => 'required',
+
         ]);
         // check if validation fails
         if ($validator->fails()) {
@@ -108,6 +125,12 @@ class ProductController extends Controller
         $product->slug = $slug;
         $product->status = $request->status ?? $product->status;
         $product->is_featured = $request->is_featured ?? $product->is_featured;
+        $product->stock_quantity = $request->stock_quantity ?? $product->stock_quantity;
+        $product->packaging_type = $request->packaging_type ?? $product->packaging_type;
+        $product->unit = $request->unit ?? $product->unit;
+        $product->country_of_origin = $request->country_of_origin ?? $product->country_of_origin;
+        $product->quality_type = $request->quality_type ?? $product->quality_type;
+
         if ($product->save()) {
             
 
