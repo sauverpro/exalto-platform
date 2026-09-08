@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   LogOut, Menu, X, BarChart3, ShoppingBag, Users, Settings,
-  TrendingUp, Package, Bell, ChevronRight, Edit2, Trash2, Sun, Moon, FileText, Globe2, Search,
+  TrendingUp, Package, Bell, ChevronRight, Edit2, Trash2, Sun, Moon, FileText, Globe2, Search, Image, LayoutTemplate, Save, Upload, Trash,
 } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
 import { products, type Product } from "../data/product";
@@ -14,6 +14,8 @@ const NAV_ITEMS = [
   { icon: Users, label: "Customers", id: "customers" },
   { icon: FileText, label: "Quotations", id: "quotations" },
   { icon: BarChart3, label: "Analytics", id: "analytics" },
+  { icon: LayoutTemplate, label: "CMS Screens", id: "cms" },
+  { icon: Image, label: "Media Library", id: "media" },
   { icon: Settings, label: "Settings", id: "settings" },
 ] as const;
 
@@ -60,6 +62,13 @@ interface ExportQuotation {
   schedule: string;
   status: "New" | "Reviewing" | "Quoted" | "Accepted" | "Declined";
   date: string;
+}
+
+interface MediaAsset {
+  id: string;
+  name: string;
+  url: string;
+  type: "image";
 }
 
 const INITIAL_CUSTOMERS: AdminCustomer[] = [
@@ -110,6 +119,37 @@ export default function AdminDashboard() {
     }
   });
   const [quotationSearch, setQuotationSearch] = useState("");
+  const [mediaAssets, setMediaAssets] = useState<MediaAsset[]>(() => {
+    try {
+      const savedMedia = localStorage.getItem("exalto-admin-media");
+      return savedMedia ? JSON.parse(savedMedia) as MediaAsset[] : [];
+    } catch {
+      return [];
+    }
+  });
+  const [mediaUrl, setMediaUrl] = useState("");
+  const [cmsContent, setCmsContent] = useState(() => {
+    try {
+      const savedCms = localStorage.getItem("exalto-admin-cms");
+      return savedCms ? JSON.parse(savedCms) : {
+        heroTitle: "EXALTO FRESH PRODUCE",
+        heroDescription: "Premium natural beverages and fresh produce from Rwanda's finest farms.",
+        aboutIntro: "We transform Rwanda's finest ingredients into premium natural beverages.",
+        ctaTitle: "Ready to Order?",
+        ctaDescription: "Create your account today and start ordering Rwanda's finest natural beverages.",
+      };
+    } catch {
+      return { heroTitle: "EXALTO FRESH PRODUCE", heroDescription: "", aboutIntro: "", ctaTitle: "Ready to Order?", ctaDescription: "" };
+    }
+  });
+  const [adminSettings, setAdminSettings] = useState(() => {
+    try {
+      const savedSettings = localStorage.getItem("exalto-admin-settings");
+      return savedSettings ? JSON.parse(savedSettings) : { companyName: "Exalto Engineering & Supply Solutions Ltd", currency: "RWF", hours: "Mon - Sun: 8:00 AM - 9:00 PM", emailNotifications: true };
+    } catch {
+      return { companyName: "Exalto Engineering & Supply Solutions Ltd", currency: "RWF", hours: "Mon - Sun: 8:00 AM - 9:00 PM", emailNotifications: true };
+    }
+  });
   const [productForm, setProductForm] = useState({
     name: "",
     category: "Juice",
@@ -126,6 +166,18 @@ export default function AdminDashboard() {
   useEffect(() => {
     localStorage.setItem("exalto-admin-quotations", JSON.stringify(quotations));
   }, [quotations]);
+
+  useEffect(() => {
+    localStorage.setItem("exalto-admin-media", JSON.stringify(mediaAssets));
+  }, [mediaAssets]);
+
+  useEffect(() => {
+    localStorage.setItem("exalto-admin-cms", JSON.stringify(cmsContent));
+  }, [cmsContent]);
+
+  useEffect(() => {
+    localStorage.setItem("exalto-admin-settings", JSON.stringify(adminSettings));
+  }, [adminSettings]);
 
   if (!isAdminLoggedIn) {
     navigate("/admin-login");
@@ -220,6 +272,22 @@ export default function AdminDashboard() {
 
   const updateQuotationStatus = (quotationId: string, status: ExportQuotation["status"]) => {
     setQuotations((current) => current.map((quotation) => quotation.id === quotationId ? { ...quotation, status } : quotation));
+  };
+
+  const addMediaAsset = (url: string, name: string) => {
+    if (!url.trim()) return;
+    setMediaAssets((current) => [...current, { id: `MED-${Date.now()}`, name: name || "Uploaded image", url, type: "image" }]);
+    setMediaUrl("");
+  };
+
+  const handleMediaUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") addMediaAsset(reader.result, file.name);
+    };
+    reader.readAsDataURL(file);
   };
 
   const paidOrders = orders.filter((order) => order.paymentStatus === "Paid");
@@ -600,6 +668,47 @@ export default function AdminDashboard() {
             </div>
           )}
 
+          {/* CMS */}
+          {activeTab === "cms" && (
+            <div className="max-w-4xl space-y-6">
+              <div>
+                <h3 className="text-xl font-bold text-white">CMS Screens</h3>
+                <p className="mt-1 text-sm text-[#4a3d38]">Edit the main website messages without changing code.</p>
+              </div>
+              <div className="grid gap-6 lg:grid-cols-2">
+                {[
+                  ["heroTitle", "Homepage hero title"],
+                  ["heroDescription", "Homepage hero description"],
+                  ["aboutIntro", "About introduction"],
+                  ["ctaTitle", "Call-to-action title"],
+                  ["ctaDescription", "Call-to-action description"],
+                ].map(([key, label]) => (
+                  <label key={key} className="text-xs font-semibold text-[#6b5e58] lg:col-span-1">
+                    {label}
+                    <textarea rows={key.includes("Description") || key === "aboutIntro" ? 4 : 2} value={cmsContent[key]} onChange={(event) => setCmsContent({ ...cmsContent, [key]: event.target.value })} className="mt-2 w-full resize-y rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" />
+                  </label>
+                ))}
+              </div>
+              <p className="flex items-center gap-2 text-xs text-emerald-400"><Save size={14} /> Changes are saved in this browser.</p>
+            </div>
+          )}
+
+          {/* MEDIA LIBRARY */}
+          {activeTab === "media" && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-xl font-bold text-white">Media Library</h3>
+                <p className="mt-1 text-sm text-[#4a3d38]">Upload images or add images from an online URL.</p>
+              </div>
+              <div className="flex flex-col gap-3 rounded-2xl border border-[#1e1410] bg-[#0f0a08] p-5 sm:flex-row">
+                <input value={mediaUrl} onChange={(event) => setMediaUrl(event.target.value)} placeholder="https://example.com/image.jpg" className="flex-1 rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white placeholder-[#4a3d38] outline-none focus:border-[#c94708]" />
+                <button type="button" onClick={() => addMediaAsset(mediaUrl, "Online image")} className="rounded-xl bg-[#c94708] px-5 py-3 text-sm font-bold text-white hover:bg-[#a83906]"><Image size={16} className="mr-2 inline" />Add URL</button>
+                <label className="cursor-pointer rounded-xl border border-[#1e1410] px-5 py-3 text-center text-sm font-bold text-[#6b5e58] hover:border-[#c94708] hover:text-white"><Upload size={16} className="mr-2 inline" />Browse<input type="file" accept="image/*" onChange={handleMediaUpload} className="sr-only" /></label>
+              </div>
+              {mediaAssets.length === 0 ? <div className="rounded-2xl border border-dashed border-[#2a1f1a] p-12 text-center text-sm text-[#6b5e58]">No media assets yet.</div> : <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">{mediaAssets.map((asset) => <div key={asset.id} className="overflow-hidden rounded-2xl border border-[#1e1410] bg-[#0f0a08]"><img src={asset.url} alt={asset.name} className="h-36 w-full object-cover" /><div className="flex items-center justify-between gap-2 p-3"><p className="truncate text-xs text-white">{asset.name}</p><button type="button" onClick={() => setMediaAssets((current) => current.filter((item) => item.id !== asset.id))} aria-label={`Delete ${asset.name}`} className="text-[#6b5e58] hover:text-red-400"><Trash size={14} /></button></div></div>)}</div>}
+            </div>
+          )}
+
           {/* SETTINGS */}
           {activeTab === "settings" && (
             <div className="max-w-xl space-y-6">
@@ -626,6 +735,24 @@ export default function AdminDashboard() {
                   <button className="rounded-xl bg-[#c94708] px-6 py-3 text-sm font-bold text-white hover:bg-[#a83906] transition shadow-[0_4px_15px_rgba(201,71,8,0.3)]">
                     Save Changes
                   </button>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-[#1e1410] bg-[#0f0a08] p-6">
+                <h3 className="mb-5 text-sm font-bold uppercase tracking-[0.12em] text-white">Store Settings</h3>
+                <div className="space-y-4">
+                  <label className="block text-xs font-semibold text-[#6b5e58]">Company name
+                    <input value={adminSettings.companyName} onChange={(event) => setAdminSettings({ ...adminSettings, companyName: event.target.value })} className="mt-2 w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" />
+                  </label>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <label className="block text-xs font-semibold text-[#6b5e58]">Currency
+                      <select value={adminSettings.currency} onChange={(event) => setAdminSettings({ ...adminSettings, currency: event.target.value })} className="mt-2 w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]"><option>RWF</option><option>USD</option><option>EUR</option></select>
+                    </label>
+                    <label className="block text-xs font-semibold text-[#6b5e58]">Opening hours
+                      <input value={adminSettings.hours} onChange={(event) => setAdminSettings({ ...adminSettings, hours: event.target.value })} className="mt-2 w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" />
+                    </label>
+                  </div>
+                  <label className="flex items-center gap-3 text-sm text-[#6b5e58]"><input type="checkbox" checked={adminSettings.emailNotifications} onChange={(event) => setAdminSettings({ ...adminSettings, emailNotifications: event.target.checked })} className="h-4 w-4 accent-[#c94708]" /> Email notifications enabled</label>
                 </div>
               </div>
 
