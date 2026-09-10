@@ -46,38 +46,24 @@ export default function ExportPage() {
   return (
     <main className="w-full bg-[#fffdf8] text-[#2a1f1a]">
 
-      {/* Hero */}
-      <section
-        className="relative flex min-h-[480px] items-center overflow-hidden px-5 pb-16 pt-36 sm:px-8"
-        style={{
-          backgroundImage:
-            "linear-gradient(105deg, rgba(10,8,5,0.94) 0%, rgba(30,15,5,0.85) 60%, rgba(10,8,5,0.60) 100%), url('https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=2000&q=85')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="mx-auto max-w-[1400px] w-full">
-          <div className="flex items-center gap-2 mb-5 text-xs text-white/50">
-            <Link to="/" className="hover:text-white">Home</Link>
+      {/* Page header */}
+      <section className="border-b border-[#eadfce] bg-white px-5 pt-28 pb-10 sm:px-8">
+        <div className="mx-auto max-w-[1400px]">
+          <div className="flex items-center gap-2 mb-4 text-xs text-[#9a8a82]">
+            <Link to="/" className="hover:text-[#c94708] transition">Home</Link>
             <ChevronRight size={12} />
-            <span className="text-[#c94708]">Export</span>
+            <span className="font-semibold text-[#c94708]">Export</span>
           </div>
-          <div className="max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#c94708]">International Business</p>
-            <h1 className="mt-4 whitespace-nowrap text-5xl font-black leading-tight !text-white sm:text-6xl lg:text-7xl">
-              Export <span className="text-[#c94708]">Business</span>
-            </h1>
-            <p className="mt-6 max-w-lg text-base leading-7 text-white/70">
-              Exalto exports premium Rwandan natural beverages to international markets. We handle all documentation, cold chain logistics, and customs clearance.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-4">
-              <a href="#quote" className="inline-flex items-center gap-2 bg-[#c94708] px-8 py-4 text-sm font-bold text-white hover:bg-[#9f3506] transition">
-                Request a Quote <ChevronRight size={16} />
-              </a>
-              <a href="#process" className="inline-flex items-center gap-2 border border-white/30 px-8 py-4 text-sm font-bold text-white hover:border-[#c94708] hover:text-[#c94708] transition">
-                Our Process
-              </a>
-            </div>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c94708]">International Business</p>
+          <h1 className="mt-2 text-4xl font-black text-[#251c18] sm:text-5xl">Export Business</h1>
+          <p className="mt-3 max-w-xl text-sm leading-7 text-[#77716d]">Exalto exports premium Rwandan natural beverages to international markets. We handle all documentation, cold chain logistics, and customs clearance.</p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <a href="#quote" className="inline-flex items-center gap-2 bg-[#c94708] px-6 py-2.5 text-sm font-bold text-white hover:bg-[#9f3506] transition">
+              Request a Quote <ChevronRight size={15} />
+            </a>
+            <a href="#process" className="inline-flex items-center gap-2 border border-[#ded5cd] px-6 py-2.5 text-sm font-bold text-[#251c18] hover:border-[#c94708] hover:text-[#c94708] transition">
+              Our Process
+            </a>
           </div>
         </div>
       </section>

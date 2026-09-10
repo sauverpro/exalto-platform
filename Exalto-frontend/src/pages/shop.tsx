@@ -49,26 +49,36 @@ export default function Shop() {
   return (
     <main className="min-h-screen bg-[#fffdfb] text-[#251c18]">
 
-      {/* Hero banner */}
-      <section
-        className="flex min-h-[260px] items-center px-5 pb-10 pt-32 sm:px-8 lg:px-12"
-        style={{
-          backgroundImage: "linear-gradient(105deg, rgba(10,8,5,0.93) 0%, rgba(30,15,5,0.85) 60%, rgba(10,8,5,0.55) 100%), url('https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=2000&q=80')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="mx-auto w-full max-w-[1400px]">
-          <div className="flex items-center gap-2 mb-4 text-xs text-white/50">
-            <Link to="/" className="hover:text-white">Home</Link>
+      {/* Search header */}
+      <div className="border-b border-[#eee8e2] bg-white px-5 pt-28 pb-6 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-[1400px]">
+          <div className="flex items-center gap-2 mb-4 text-xs text-[#9a8a82]">
+            <Link to="/" className="hover:text-[#c94708]">Home</Link>
             <span className="text-[#c94708]">›</span>
-            <span className="font-semibold text-white">Shop</span>
+            <span className="font-semibold text-[#251c18]">Shop</span>
           </div>
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#c94708]">From Rwanda, with care</p>
-          <h1 className="mt-2 text-4xl font-black !text-white sm:text-5xl">Our Products</h1>
-          <p className="mx-auto mt-3 max-w-none text-center text-sm text-white/60 motion-safe:animate-pulse sm:whitespace-nowrap">Natural beverages crafted from Rwanda's finest ingredients. No additives, no compromise.</p>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h1 className="text-2xl font-black text-[#251c18] sm:text-3xl">Our Products</h1>
+              <p className="mt-1 text-sm text-[#77716d]">{products.length} products available</p>
+            </div>
+            <label className="flex w-full max-w-md items-center gap-3 border border-[#ded5cd] bg-[#fffdf8] px-4 py-3 focus-within:border-[#c94708] focus-within:ring-1 focus-within:ring-[#c94708]/20 transition">
+              <Search size={18} className="flex-shrink-0 text-[#b9aaa1]" />
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search products by name, category..."
+                className="w-full bg-transparent text-sm outline-none placeholder:text-[#b9aaa1]"
+              />
+              {query && (
+                <button onClick={() => setQuery("")} className="flex-shrink-0 text-[#b9aaa1] hover:text-[#c94708]">
+                  <X size={15} />
+                </button>
+              )}
+            </label>
+          </div>
         </div>
-      </section>
+      </div>
 
       {/* Category tabs */}
       <div className="sticky top-[72px] sm:top-[88px] z-30 border-b border-[#eee8e2] bg-white/95 backdrop-blur">
@@ -102,12 +112,6 @@ export default function Shop() {
                 {hasFilters && (
                   <button onClick={clearFilters} className="text-xs font-semibold text-[#c94708] hover:underline">Clear all</button>
                 )}
-              </div>
-
-              {/* Search */}
-              <div className="relative">
-                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#b9aaa1]" />
-                <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search products..." className="w-full border border-[#ded5cd] bg-[#fffdf8] pl-9 pr-4 py-2.5 text-sm outline-none focus:border-[#c94708]" />
               </div>
 
               {/* Grade */}

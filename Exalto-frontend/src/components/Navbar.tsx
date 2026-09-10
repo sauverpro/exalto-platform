@@ -6,26 +6,18 @@ import { useFavorites } from '../context/FavoritesContext'
 import logoImage from '../assets/logo image.png'
 
 function Navbar() {
-  const [navSolid, setNavSolid] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { itemCount } = useCart()
   const { favorites } = useFavorites()
   const navigate = useNavigate()
   const { pathname } = useLocation()
 
-  useEffect(() => {
-    function onScroll() { setNavSolid(window.scrollY > 24) }
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
   useEffect(() => { setMobileMenuOpen(false) }, [pathname])
 
   const isActive = (path: string) => pathname === path
 
   return (
-    <header className={`fixed top-0 left-0 w-full z-40 transition-all duration-300 ${navSolid || mobileMenuOpen ? 'bg-white shadow-md' : 'bg-transparent'}`}>
+    <header className={`fixed top-0 left-0 w-full z-40 transition-all duration-300 bg-white shadow-sm`}>
       <div className="mx-auto flex h-[72px] sm:h-[88px] items-center justify-between max-w-[1400px] px-5 sm:px-8 lg:px-12">
         <Link to="/" className="flex items-center gap-2.5" aria-label="Exalto home">
           <img src={logoImage} alt="Exalto" className="h-9 sm:h-12 w-auto" />
@@ -44,7 +36,7 @@ function Navbar() {
             <Link
               key={to}
               to={to}
-              className={`px-4 py-2 text-sm font-semibold rounded-lg transition ${isActive(to) ? 'text-[#c94708]' : `${navSolid ? 'text-[#251c18]' : 'text-white'} hover:text-[#c94708]`}`}
+              className={`px-4 py-2 text-sm font-semibold rounded-lg transition ${isActive(to) ? 'text-[#c94708]' : 'text-[#251c18] hover:text-[#c94708]'}`}
             >
               {label}
             </Link>
@@ -57,7 +49,7 @@ function Navbar() {
             type="button"
             onClick={() => navigate('/shop')}
             aria-label="Search"
-            className={`hidden h-9 w-9 sm:flex items-center justify-center rounded-full transition ${navSolid ? 'bg-[#f3efe9] text-[#c94708] hover:bg-[#eadfce]' : 'bg-white/15 text-white hover:bg-white/25'}`}
+            className="hidden h-9 w-9 sm:flex items-center justify-center rounded-full bg-[#f3efe9] text-[#c94708] hover:bg-[#eadfce] transition"
           >
             <Search size={17} />
           </button>
@@ -65,7 +57,7 @@ function Navbar() {
           <Link
             to="/cart"
             aria-label="Shopping cart"
-            className={`relative flex h-9 w-9 items-center justify-center rounded-full transition ${navSolid ? 'bg-[#f3efe9] text-[#c94708] hover:bg-[#eadfce]' : 'bg-white/15 text-white hover:bg-white/25'}`}
+            className="relative flex h-9 w-9 items-center justify-center rounded-full bg-[#f3efe9] text-[#c94708] hover:bg-[#eadfce] transition"
           >
             <ShoppingCart size={17} />
             {itemCount > 0 && <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#c94708] text-[9px] font-bold text-white">{itemCount}</span>}
@@ -74,7 +66,7 @@ function Navbar() {
           <Link
             to="/favorites"
             aria-label="Wishlist"
-            className={`relative hidden h-9 w-9 sm:flex items-center justify-center rounded-full transition ${navSolid ? 'bg-[#f3efe9] text-[#c94708] hover:bg-[#eadfce]' : 'bg-white/15 text-white hover:bg-white/25'}`}
+            className="relative hidden h-9 w-9 sm:flex items-center justify-center rounded-full bg-[#f3efe9] text-[#c94708] hover:bg-[#eadfce] transition"
           >
             <Heart size={17} />
             {favorites.length > 0 && <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#c94708] text-[9px] font-bold text-white">{favorites.length}</span>}
@@ -83,7 +75,7 @@ function Navbar() {
           <Link
             to="/login"
             aria-label="Account"
-            className={`hidden h-9 w-9 sm:flex items-center justify-center rounded-full transition ${navSolid ? 'bg-[#f3efe9] text-[#c94708] hover:bg-[#eadfce]' : 'bg-white/15 text-white hover:bg-white/25'}`}
+            className="hidden h-9 w-9 sm:flex items-center justify-center rounded-full bg-[#f3efe9] text-[#c94708] hover:bg-[#eadfce] transition"
           >
             <UserRound size={17} />
           </Link>
@@ -99,7 +91,7 @@ function Navbar() {
             type="button"
             aria-label="Toggle menu"
             onClick={() => setMobileMenuOpen((o) => !o)}
-            className={`flex h-9 w-9 items-center justify-center rounded-full transition lg:hidden ${navSolid || mobileMenuOpen ? 'bg-[#f3efe9] text-[#c94708]' : 'bg-white/15 text-white'}`}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f3efe9] text-[#c94708] hover:bg-[#eadfce] transition lg:hidden"
           >
             {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>

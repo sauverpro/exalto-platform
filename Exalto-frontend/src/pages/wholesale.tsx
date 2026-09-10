@@ -21,25 +21,17 @@ export default function WholesalePage() {
   return (
     <main className="w-full bg-[#fffdf8] text-[#2a1f1a]">
 
-      {/* Hero */}
-      <section className="relative flex min-h-[480px] items-center overflow-hidden bg-[#251c18] px-5 pb-16 pt-36 sm:px-8">
-        <div className="mx-auto max-w-[1400px] w-full">
-          <div className="flex items-center gap-2 mb-5 text-xs text-white/50">
-            <Link to="/" className="hover:text-white">Home</Link>
+      {/* Page header */}
+      <section className="border-b border-[#eadfce] bg-white px-5 pt-28 pb-10 sm:px-8">
+        <div className="mx-auto max-w-[1400px]">
+          <div className="flex items-center gap-2 mb-4 text-xs text-[#9a8a82]">
+            <Link to="/" className="hover:text-[#c94708] transition">Home</Link>
             <ChevronRight size={12} />
-            <span className="text-[#c94708]">Wholesale</span>
+            <span className="font-semibold text-[#c94708]">Wholesale</span>
           </div>
-          <div className="max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#c94708]">For Business Buyers</p>
-            <h1 className="mt-4 text-5xl font-black leading-tight !text-white sm:text-6xl lg:text-7xl">
-              Wholesale<br />
-              <span className="text-[#c94708]">Solutions</span>
-            </h1>
-            <p className="mt-3 max-w-3xl text-[11px] leading-4 text-white/70 sm:whitespace-nowrap sm:text-xs">
-              Partner with Exalto for reliable bulk supply of premium natural beverages. Competitive pricing, flexible terms, and dedicated support for your business.
-            </p>
-          
-          </div>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c94708]">For Business Buyers</p>
+          <h1 className="mt-2 text-4xl font-black text-[#251c18] sm:text-5xl">Wholesale Solutions</h1>
+          <p className="mt-3 max-w-xl text-sm leading-7 text-[#77716d]">Partner with Exalto for reliable bulk supply of premium natural beverages. Competitive pricing, flexible terms, and dedicated support.</p>
         </div>
       </section>
 
