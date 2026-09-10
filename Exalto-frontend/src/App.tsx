@@ -9,7 +9,7 @@ import { AdminProvider } from "./context/AdminContext";
 import Home from "./pages/home";
 import Shop from "./pages/shop";
 import AboutPage from "./pages/about";
-import ContactPage from "./pages/contact";
+// import ContactPage from "./pages/contact";
 import CartPage from "./pages/cart";
 import Login from "./pages/login";
 import RegisterPage from "./pages/register";
@@ -39,7 +39,7 @@ function Layout() {
         <Route path="/" element={<Home />} />
         <Route path="/shop" element={<Shop />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/contact" element={<ContactPage />} />
+        {/* <Route path="/contact" element={<ContactPage />} /> */}
         <Route path="/cart" element={<CartPage />} />
         <Route path="/favorites" element={<FavoritesPage />} />
         <Route path="/login" element={<Login />} />
