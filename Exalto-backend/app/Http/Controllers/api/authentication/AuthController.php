@@ -27,16 +27,56 @@ class AuthController extends Controller
             ],422);
         }
 
-        // registration
         $user = User::create([
             'full_name' => $request->full_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'phone_number' => $request->phone_number,
+            'role' => User::ROLE_CLIENT,
         ]);
+
         return response()->json([
-            "message" => "User registered successfully"
+            "message" => "User registered successfully",
+            "role" => $user->role,
         ]);
+    }
+
+    public function createStaffUser(Request $request)
+    {
+        $admin = Auth::user();
+        if (!$admin || !$admin->isAdmin()) {
+            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'full_name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+            'phone_number' => 'required|numeric|min:10|unique:users',
+            'role' => 'required|string|in:sales_manager',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $user = User::create([
+            'full_name' => $request->full_name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'phone_number' => $request->phone_number,
+            'role' => User::ROLE_SALES_MANAGER,
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Sales manager created successfully',
+            'data' => $user,
+        ], 201);
     }
 
     public function Login(Request $request) {

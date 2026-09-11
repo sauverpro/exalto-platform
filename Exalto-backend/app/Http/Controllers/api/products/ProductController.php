@@ -12,9 +12,8 @@ class ProductController extends Controller
     // store product with category id
     public function StoreProduct(Request $request)
     {
-        // check if authenticated user is admin
         $user = Auth::user();
-        if ($user->role !== 'admin') {
+        if (!$user || !$user->isAdmin()) {
             return response()->json(['status' => false, 'message' => 'Unauthorized'], 401);
         }
         $validator = Validator::make($request->all(), [
@@ -79,9 +78,8 @@ class ProductController extends Controller
     // update product with category id
     public function UpdateProduct(Request $request, $id)
     {
-        // check if authenticated user is admin
         $user = Auth::user();
-        if ($user->role !== 'admin') {
+        if (!$user || (!$user->isAdmin() && !$user->isSalesManager())) {
             return response()->json(['status' => false, 'message' => 'Unauthorized'], 401);
         }
         $product = \App\Models\Product::find($id);
@@ -144,9 +142,8 @@ class ProductController extends Controller
 // delete product with category id
     public function DeleteProduct($id)
     {
-        // check if authenticated user is admin
         $user = Auth::user();
-        if ($user->role !== 'admin') {
+        if (!$user || !$user->isAdmin()) {
             return response()->json(['status' => false, 'message' => 'Unauthorized'], 401);
         }
         $product = \App\Models\Product::find($id);
@@ -162,11 +159,9 @@ class ProductController extends Controller
     // get all products
     public function GetAllProducts()
     {
-        // check if logged in user is admin
         $user = Auth::user();
-        if($user->role !=="admin"){
-            return response()->json(['status'=>false, 'message'=>'Unauthorized'],403);       
-            
+        if (!$user || (!$user->isAdmin() && !$user->isSalesManager())) {
+            return response()->json(['status'=>false, 'message'=>'Unauthorized'],403);
         }
         $products = \App\Models\Product::all();
         return response()->json(['status' => true, 'message' => 'All Products', 'data' => $products], 200);
