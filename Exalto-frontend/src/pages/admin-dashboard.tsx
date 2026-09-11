@@ -128,18 +128,73 @@ export default function AdminDashboard() {
     }
   });
   const [mediaUrl, setMediaUrl] = useState("");
+  const [cmsPage, setCmsPage] = useState<"home" | "about" | "contact" | "wholesale" | "export">("home");
+  const [cmsOpenSections, setCmsOpenSections] = useState<Record<string, boolean>>({ navbar: true, hero: true });
+  const toggleCmsSection = (key: string) => setCmsOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
   const [cmsContent, setCmsContent] = useState(() => {
     try {
       const savedCms = localStorage.getItem("exalto-admin-cms");
       return savedCms ? JSON.parse(savedCms) : {
+        // Navbar
+        navLinks: ["Home", "Shop", "About", "Wholesale", "Export", "Contact"],
+        navCta: "Order Now",
+        // Home – Hero
         heroTitle: "EXALTO FRESH PRODUCE",
-        heroDescription: "Premium natural beverages and fresh produce from Rwanda's finest farms.",
-        aboutIntro: "We transform Rwanda's finest ingredients into premium natural beverages.",
+        heroSubtitle: "Premium natural beverages and fresh produce from Rwanda's finest farms. Supplying local businesses, wholesale buyers, and international export partners.",
+        heroBtn1: "Shop Now",
+        heroBtn2: "Wholesale Enquiry",
+        heroStat1Val: "500+", heroStat1Label: "Happy Clients",
+        heroStat2Val: "100%", heroStat2Label: "Natural",
+        heroStat3Val: "2+", heroStat3Label: "Products",
+        heroStat4Val: "Rwanda", heroStat4Label: "Origin",
+        // Home – Announcement
+        announcementText: "Free delivery on orders in Kigali · Export inquiries welcome",
+        announcementLink: "Open a wholesale account →",
+        // Home – Categories section
+        categoriesHeading: "Shop Our Range",
+        categoriesSubheading: "Browse by Category",
+        // Home – Features
+        featuresHeading: "",
+        feature1Title: "100% Natural", feature1Desc: "No artificial additives. Pure ingredients from Rwanda's finest farms.",
+        feature2Title: "Quality Certified", feature2Desc: "Every batch tested and certified to meet international standards.",
+        feature3Title: "Fast Delivery", feature3Desc: "Same-day delivery in Kigali. Nationwide and export shipping available.",
+        feature4Title: "Premium Grade", feature4Desc: "Only Grade A produce selected for our beverages and export catalog.",
+        // Home – Featured Products
+        productsHeading: "Featured Products",
+        productsSubheading: "Fresh & Natural",
+        // Home – Wholesale Banner
+        wholesaleBannerTag: "For Business Buyers",
+        wholesaleBannerTitle: "Wholesale & Export Solutions",
+        wholesaleBannerDesc: "We supply restaurants, hotels, supermarkets, and international distributors with premium Rwandan beverages.",
+        wholesaleBannerBtn1: "Open Wholesale Account",
+        wholesaleBannerBtn2: "Export Enquiry",
+        // Home – Testimonials
+        testimonialsHeading: "Trusted by Businesses",
+        testimonialsSubheading: "What Our Clients Say",
+        testimonial1Name: "Jean-Pierre M.", testimonial1Role: "Restaurant Owner, Kigali", testimonial1Text: "Exalto's passion juice is the best we've served. Our customers always ask for more.",
+        testimonial2Name: "Sarah K.", testimonial2Role: "Wholesale Buyer", testimonial2Text: "Reliable supply, great pricing, and the team is always responsive.",
+        testimonial3Name: "David N.", testimonial3Role: "Export Partner, Nairobi", testimonial3Text: "The sugarcane wine has been a hit in our market. Packaging is excellent.",
+        // Home – CTA
         ctaTitle: "Ready to Order?",
         ctaDescription: "Create your account today and start ordering Rwanda's finest natural beverages.",
+        ctaBtn1: "Create Account",
+        ctaBtn2: "Browse Products",
+        // About
+        aboutIntro: "We transform Rwanda's finest ingredients into premium natural beverages.",
+        aboutMission: "To deliver the purest, most natural beverages from Rwanda to the world.",
+        // Contact
+        contactHeading: "Get in Touch",
+        contactSubheading: "We're here to help",
+        contactIntro: "Have a question, want to place a bulk order, or just want to say hello?",
+        // Wholesale
+        wholesaleHeading: "Wholesale Partnership",
+        wholesaleIntro: "Join our growing network of wholesale partners across Rwanda and beyond.",
+        // Export
+        exportHeading: "Export Solutions",
+        exportIntro: "We export premium Rwandan beverages to markets across Africa and beyond.",
       };
     } catch {
-      return { heroTitle: "EXALTO FRESH PRODUCE", heroDescription: "", aboutIntro: "", ctaTitle: "Ready to Order?", ctaDescription: "" };
+      return { heroTitle: "EXALTO FRESH PRODUCE", heroSubtitle: "", ctaTitle: "Ready to Order?", ctaDescription: "", navLinks: ["Home","Shop","About","Wholesale","Export","Contact"], navCta: "Order Now" };
     }
   });
   const [adminSettings, setAdminSettings] = useState(() => {
@@ -670,26 +725,189 @@ export default function AdminDashboard() {
 
           {/* CMS */}
           {activeTab === "cms" && (
-            <div className="max-w-4xl space-y-6">
-              <div>
-                <h3 className="text-xl font-bold text-white">CMS Screens</h3>
-                <p className="mt-1 text-sm text-[#4a3d38]">Edit the main website messages without changing code.</p>
+            <div className="space-y-6">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-xl font-bold text-white">CMS Screens</h3>
+                  <p className="mt-1 text-sm text-[#4a3d38]">Edit website content page by page without touching code.</p>
+                </div>
+                <p className="flex items-center gap-2 text-xs text-emerald-400"><Save size={13} /> Auto-saved in browser</p>
               </div>
-              <div className="grid gap-6 lg:grid-cols-2">
-                {[
-                  ["heroTitle", "Homepage hero title"],
-                  ["heroDescription", "Homepage hero description"],
-                  ["aboutIntro", "About introduction"],
-                  ["ctaTitle", "Call-to-action title"],
-                  ["ctaDescription", "Call-to-action description"],
-                ].map(([key, label]) => (
-                  <label key={key} className="text-xs font-semibold text-[#6b5e58] lg:col-span-1">
-                    {label}
-                    <textarea rows={key.includes("Description") || key === "aboutIntro" ? 4 : 2} value={cmsContent[key]} onChange={(event) => setCmsContent({ ...cmsContent, [key]: event.target.value })} className="mt-2 w-full resize-y rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" />
-                  </label>
+
+              {/* Page tabs */}
+              <div className="flex flex-wrap gap-2">
+                {(["home", "about", "contact", "wholesale", "export"] as const).map((page) => (
+                  <button key={page} onClick={() => setCmsPage(page)}
+                    className={`rounded-xl px-5 py-2 text-sm font-semibold capitalize transition ${
+                      cmsPage === page ? "bg-[#c94708] text-white shadow-[0_4px_15px_rgba(201,71,8,0.35)]" : "border border-[#1e1410] text-[#6b5e58] hover:border-[#c94708]/50 hover:text-white"
+                    }`}>
+                    {page.charAt(0).toUpperCase() + page.slice(1)}
+                  </button>
                 ))}
               </div>
-              <p className="flex items-center gap-2 text-xs text-emerald-400"><Save size={14} /> Changes are saved in this browser.</p>
+
+              {/* ── HOME ── */}
+              {cmsPage === "home" && (
+                <div className="space-y-4">
+
+                  {/* Navbar */}
+                  {([
+                    ["navbar", "Navbar", [
+                      { key: "navLinks", label: "Nav Links (comma-separated)", isArray: true },
+                      { key: "navCta", label: "CTA Button Text" },
+                    ]],
+                    ["hero", "Hero Section", [
+                      { key: "heroTitle", label: "Main Title" },
+                      { key: "heroSubtitle", label: "Subtitle", long: true },
+                      { key: "heroBtn1", label: "Button 1 Text" },
+                      { key: "heroBtn2", label: "Button 2 Text" },
+                      { key: "heroStat1Val", label: "Stat 1 Value" }, { key: "heroStat1Label", label: "Stat 1 Label" },
+                      { key: "heroStat2Val", label: "Stat 2 Value" }, { key: "heroStat2Label", label: "Stat 2 Label" },
+                      { key: "heroStat3Val", label: "Stat 3 Value" }, { key: "heroStat3Label", label: "Stat 3 Label" },
+                      { key: "heroStat4Val", label: "Stat 4 Value" }, { key: "heroStat4Label", label: "Stat 4 Label" },
+                    ]],
+                    ["announcement", "Announcement Bar", [
+                      { key: "announcementText", label: "Announcement Text" },
+                      { key: "announcementLink", label: "Link Text" },
+                    ]],
+                    ["categories", "Categories Section", [
+                      { key: "categoriesSubheading", label: "Subheading" },
+                      { key: "categoriesHeading", label: "Heading" },
+                    ]],
+                    ["features", "Features Strip", [
+                      { key: "feature1Title", label: "Feature 1 Title" }, { key: "feature1Desc", label: "Feature 1 Description", long: true },
+                      { key: "feature2Title", label: "Feature 2 Title" }, { key: "feature2Desc", label: "Feature 2 Description", long: true },
+                      { key: "feature3Title", label: "Feature 3 Title" }, { key: "feature3Desc", label: "Feature 3 Description", long: true },
+                      { key: "feature4Title", label: "Feature 4 Title" }, { key: "feature4Desc", label: "Feature 4 Description", long: true },
+                    ]],
+                    ["products", "Featured Products Section", [
+                      { key: "productsSubheading", label: "Subheading" },
+                      { key: "productsHeading", label: "Heading" },
+                    ]],
+                    ["wholesaleBanner", "Wholesale Banner", [
+                      { key: "wholesaleBannerTag", label: "Tag Line" },
+                      { key: "wholesaleBannerTitle", label: "Title" },
+                      { key: "wholesaleBannerDesc", label: "Description", long: true },
+                      { key: "wholesaleBannerBtn1", label: "Button 1 Text" },
+                      { key: "wholesaleBannerBtn2", label: "Button 2 Text" },
+                    ]],
+                    ["testimonials", "Testimonials", [
+                      { key: "testimonialsSubheading", label: "Subheading" },
+                      { key: "testimonialsHeading", label: "Heading" },
+                      { key: "testimonial1Name", label: "Testimonial 1 Name" }, { key: "testimonial1Role", label: "Testimonial 1 Role" }, { key: "testimonial1Text", label: "Testimonial 1 Text", long: true },
+                      { key: "testimonial2Name", label: "Testimonial 2 Name" }, { key: "testimonial2Role", label: "Testimonial 2 Role" }, { key: "testimonial2Text", label: "Testimonial 2 Text", long: true },
+                      { key: "testimonial3Name", label: "Testimonial 3 Name" }, { key: "testimonial3Role", label: "Testimonial 3 Role" }, { key: "testimonial3Text", label: "Testimonial 3 Text", long: true },
+                    ]],
+                    ["cta", "Call-to-Action Section", [
+                      { key: "ctaTitle", label: "Title" },
+                      { key: "ctaDescription", label: "Description", long: true },
+                      { key: "ctaBtn1", label: "Button 1 Text" },
+                      { key: "ctaBtn2", label: "Button 2 Text" },
+                    ]],
+                  ] as [string, string, { key: string; label: string; long?: boolean; isArray?: boolean }[]][]).map(([sectionId, sectionTitle, fields]) => (
+                    <div key={sectionId} className="overflow-hidden rounded-2xl border border-[#1e1410] bg-[#0f0a08]">
+                      <button
+                        type="button"
+                        onClick={() => toggleCmsSection(sectionId)}
+                        className="flex w-full items-center justify-between px-6 py-4 text-left"
+                      >
+                        <span className="text-sm font-bold text-white">{sectionTitle}</span>
+                        <ChevronRight size={16} className={`text-[#6b5e58] transition-transform ${cmsOpenSections[sectionId] ? "rotate-90" : ""}`} />
+                      </button>
+                      {cmsOpenSections[sectionId] && (
+                        <div className="grid gap-4 border-t border-[#1e1410] px-6 pb-6 pt-5 sm:grid-cols-2">
+                          {fields.map(({ key, label, long, isArray }) => (
+                            <label key={key} className={`text-xs font-semibold text-[#6b5e58] ${long ? "sm:col-span-2" : ""}`}>
+                              {label}
+                              {long ? (
+                                <textarea rows={3} value={cmsContent[key] ?? ""} onChange={(e) => setCmsContent({ ...cmsContent, [key]: e.target.value })} className="mt-2 w-full resize-y rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" />
+                              ) : (
+                                <input type="text" value={isArray ? (cmsContent[key] as string[])?.join(", ") ?? "" : cmsContent[key] ?? ""}
+                                  onChange={(e) => setCmsContent({ ...cmsContent, [key]: isArray ? e.target.value.split(",").map((s: string) => s.trim()) : e.target.value })}
+                                  className="mt-2 w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" />
+                              )}
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* ── ABOUT ── */}
+              {cmsPage === "about" && (
+                <div className="overflow-hidden rounded-2xl border border-[#1e1410] bg-[#0f0a08]">
+                  <div className="border-b border-[#1e1410] px-6 py-4"><p className="text-sm font-bold text-white">About Page</p></div>
+                  <div className="grid gap-4 px-6 pb-6 pt-5 sm:grid-cols-2">
+                    {[
+                      { key: "aboutIntro", label: "Introduction", long: true },
+                      { key: "aboutMission", label: "Mission Statement", long: true },
+                    ].map(({ key, label, long }) => (
+                      <label key={key} className="text-xs font-semibold text-[#6b5e58] sm:col-span-2">
+                        {label}
+                        {long ? <textarea rows={3} value={cmsContent[key] ?? ""} onChange={(e) => setCmsContent({ ...cmsContent, [key]: e.target.value })} className="mt-2 w-full resize-y rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" /> : <input type="text" value={cmsContent[key] ?? ""} onChange={(e) => setCmsContent({ ...cmsContent, [key]: e.target.value })} className="mt-2 w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" />}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ── CONTACT ── */}
+              {cmsPage === "contact" && (
+                <div className="overflow-hidden rounded-2xl border border-[#1e1410] bg-[#0f0a08]">
+                  <div className="border-b border-[#1e1410] px-6 py-4"><p className="text-sm font-bold text-white">Contact Page</p></div>
+                  <div className="grid gap-4 px-6 pb-6 pt-5 sm:grid-cols-2">
+                    {[
+                      { key: "contactSubheading", label: "Subheading" },
+                      { key: "contactHeading", label: "Heading" },
+                      { key: "contactIntro", label: "Intro Text", long: true },
+                    ].map(({ key, label, long }) => (
+                      <label key={key} className={`text-xs font-semibold text-[#6b5e58] ${long ? "sm:col-span-2" : ""}`}>
+                        {label}
+                        {long ? <textarea rows={3} value={cmsContent[key] ?? ""} onChange={(e) => setCmsContent({ ...cmsContent, [key]: e.target.value })} className="mt-2 w-full resize-y rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" /> : <input type="text" value={cmsContent[key] ?? ""} onChange={(e) => setCmsContent({ ...cmsContent, [key]: e.target.value })} className="mt-2 w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" />}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ── WHOLESALE ── */}
+              {cmsPage === "wholesale" && (
+                <div className="overflow-hidden rounded-2xl border border-[#1e1410] bg-[#0f0a08]">
+                  <div className="border-b border-[#1e1410] px-6 py-4"><p className="text-sm font-bold text-white">Wholesale Page</p></div>
+                  <div className="grid gap-4 px-6 pb-6 pt-5 sm:grid-cols-2">
+                    {[
+                      { key: "wholesaleHeading", label: "Heading" },
+                      { key: "wholesaleIntro", label: "Intro Text", long: true },
+                    ].map(({ key, label, long }) => (
+                      <label key={key} className={`text-xs font-semibold text-[#6b5e58] ${long ? "sm:col-span-2" : ""}`}>
+                        {label}
+                        {long ? <textarea rows={3} value={cmsContent[key] ?? ""} onChange={(e) => setCmsContent({ ...cmsContent, [key]: e.target.value })} className="mt-2 w-full resize-y rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" /> : <input type="text" value={cmsContent[key] ?? ""} onChange={(e) => setCmsContent({ ...cmsContent, [key]: e.target.value })} className="mt-2 w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" />}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ── EXPORT ── */}
+              {cmsPage === "export" && (
+                <div className="overflow-hidden rounded-2xl border border-[#1e1410] bg-[#0f0a08]">
+                  <div className="border-b border-[#1e1410] px-6 py-4"><p className="text-sm font-bold text-white">Export Page</p></div>
+                  <div className="grid gap-4 px-6 pb-6 pt-5 sm:grid-cols-2">
+                    {[
+                      { key: "exportHeading", label: "Heading" },
+                      { key: "exportIntro", label: "Intro Text", long: true },
+                    ].map(({ key, label, long }) => (
+                      <label key={key} className={`text-xs font-semibold text-[#6b5e58] ${long ? "sm:col-span-2" : ""}`}>
+                        {label}
+                        {long ? <textarea rows={3} value={cmsContent[key] ?? ""} onChange={(e) => setCmsContent({ ...cmsContent, [key]: e.target.value })} className="mt-2 w-full resize-y rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" /> : <input type="text" value={cmsContent[key] ?? ""} onChange={(e) => setCmsContent({ ...cmsContent, [key]: e.target.value })} className="mt-2 w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" />}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+
             </div>
           )}
 
