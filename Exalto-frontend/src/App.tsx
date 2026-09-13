@@ -26,7 +26,7 @@ import PrivacyPolicyPage from "./pages/privacy-policy";
 import TermsPage from "./pages/terms";
 import FAQsPage from "./pages/faqs";
 
-const NO_LAYOUT_PATHS = ["/admin-login", "/admin-dashboard", "/customer-dashboard"];
+const NO_LAYOUT_PATHS = ["/admin-login", "/admin-dashboard", "/customer-dashboard", "/login", "/register", "/forgot-password"];
 
 function Layout() {
   const { pathname } = useLocation();
