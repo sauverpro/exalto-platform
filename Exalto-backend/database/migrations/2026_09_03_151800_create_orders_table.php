@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId('address_id')->constained('address')->cascadeOnDelete();
-            $table->foreignId('user_id')->constained('User')->cascadeOnDelete();
+            $table->foreignId('address_id')->constained('addresses')->cascadeOnDelete();
+            $table->foreignId('user_id')->nullable()->constained('User')->nullOnDelete();
             $table->string('status');
-            $table->integer('subtotal');
+            $table->integer('subtotal')->default(0);
             $table->integer('shipping_fee');
-            $table->integer('total');
+            $table->integer('total')->default(0);
             $table->string('currency');
-            $table->text('notes');
+            $table->text('notes')->nullable();
         });
     }
 

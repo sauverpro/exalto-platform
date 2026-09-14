@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\api\payment;
 
+use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use App\Models\Order;
 use Illuminate\Http\Request;
@@ -159,6 +160,11 @@ class PaymentController extends Controller
     // for admin: update payment status
     public function adminUpdate(Request $request, $id)
     {
+        $user = \Illuminate\Support\Facades\Auth::user();
+        if (!$user || (!$user->isAdmin() && !$user->isSalesManager())) {
+            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
+        }
+
         $payment = Payment::find($id);
 
         if (!$payment) {

@@ -15,11 +15,9 @@ class CategoryController extends Controller {
 
 	// function to store category
 	public function StoreCategory (Request $request) {
-		// check if logged in user is admin
-        $user = Auth::user();
-        if($user->role !=="admin"){
-            return response()->json(['status'=>false, 'message'=>'Unauthorized'],403);       
-            
+		$user = Auth::user();
+        if (!$user || !$user->isAdmin()) {
+            return response()->json(['status'=>false, 'message'=>'Unauthorized'],403);
         }
 		$validator = Validator::make($request->all(), [
 			'name' => 'required|string|max:255',
@@ -36,11 +34,9 @@ class CategoryController extends Controller {
 	}
 	// delete category and disable all products in that category
 	public function DeleteCategory (Request $request, $id) {
-		// check if logged in user is admin
-        $user = Auth::user();
-        if($user->role !=="admin"){
-            return response()->json(['status'=>false, 'message'=>'Unauthorized'],403);       
-            
+		$user = Auth::user();
+        if (!$user || !$user->isAdmin()) {
+            return response()->json(['status'=>false, 'message'=>'Unauthorized'],403);
         }
 		$category = Category::find($id);
 		if (!$category) {
