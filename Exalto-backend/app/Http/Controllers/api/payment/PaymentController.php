@@ -7,6 +7,7 @@ use App\Models\Payment;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller
 {
@@ -38,7 +39,8 @@ class PaymentController extends Controller
         }
 
         // Verify order belongs to user
-        $order = Order::where('user_id', $request->user()->id)
+        $user = Auth::user();
+        $order = Order::where('user_id', $user->id)
             ->where('id', $request->order_id)
             ->first();
 
@@ -47,7 +49,7 @@ class PaymentController extends Controller
         }
 
         $data = $request->all();
-        $data['user_id'] = $request->user()->id;
+        $data['user_id'] = $user->id;
         $data['status'] = $request->status ?? 'pending';
         $data['paid_at'] = $data['status'] === 'completed' ? now() : null;
 
