@@ -119,20 +119,24 @@ export default function CheckoutPage() {
                   </div>
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div>
-                      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">Full Name *</label>
+                      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">Full Name </label>
                       <input required value={delivery.name} onChange={(e) => setDelivery({ ...delivery, name: e.target.value })} className="w-full border border-[#ded5cd] px-4 py-3 text-sm outline-none focus:border-[#c94708]" placeholder="Your full name" />
                     </div>
                     <div>
-                      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">Phone Number *</label>
+                      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">Phone Number </label>
                       <input required value={delivery.phone} onChange={(e) => setDelivery({ ...delivery, phone: e.target.value })} className="w-full border border-[#ded5cd] px-4 py-3 text-sm outline-none focus:border-[#c94708]" placeholder="+250 7XX XXX XXX" />
                     </div>
                     <div className="sm:col-span-2">
-                      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">Delivery Address *</label>
+                      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">Delivery Address </label>
                       <input required value={delivery.address} onChange={(e) => setDelivery({ ...delivery, address: e.target.value })} className="w-full border border-[#ded5cd] px-4 py-3 text-sm outline-none focus:border-[#c94708]" placeholder="Street, neighbourhood" />
                     </div>
                     <div>
-                      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">City / District *</label>
+                      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">City / District </label>
                       <input required value={delivery.city} onChange={(e) => setDelivery({ ...delivery, city: e.target.value })} className="w-full border border-[#ded5cd] px-4 py-3 text-sm outline-none focus:border-[#c94708]" placeholder="e.g. Kigali" />
+                    </div>
+                    <div>
+                      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">Sector</label>
+                      <input required value={delivery.name} onChange={(e) => setDelivery({ ...delivery, name: e.target.value })} className="w-full border border-[#ded5cd] px-4 py-3 text-sm outline-none focus:border-[#c94708]" placeholder="Sector" />
                     </div>
                     <div>
                       <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">Preferred Delivery Date</label>
