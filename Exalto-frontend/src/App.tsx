@@ -5,6 +5,7 @@ import Footer from "./components/Footer";
 import { CartProvider } from "./context/CartContext";
 import { FavoritesProvider } from "./context/FavoritesContext";
 import { AdminProvider } from "./context/AdminContext";
+import { UserProvider } from "./context/UserContext";
 
 import Home from "./pages/home";
 import Shop from "./pages/shop";
@@ -64,13 +65,15 @@ function Layout() {
 function App() {
   return (
     <BrowserRouter>
-      <AdminProvider>
-        <CartProvider>
-          <FavoritesProvider>
-            <Layout />
-          </FavoritesProvider>
-        </CartProvider>
-      </AdminProvider>
+      <UserProvider>
+        <AdminProvider>
+          <CartProvider>
+            <FavoritesProvider>
+              <Layout />
+            </FavoritesProvider>
+          </CartProvider>
+        </AdminProvider>
+      </UserProvider>
     </BrowserRouter>
   );
 }

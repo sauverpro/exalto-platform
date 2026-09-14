@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Heart, Search, ShoppingCart, Menu, X, UserRound } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { useFavorites } from '../context/FavoritesContext'
-import logoImage from '../assets/logo image.png'
+import logoImage from '../assets/logo-image.png'
 
 function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)

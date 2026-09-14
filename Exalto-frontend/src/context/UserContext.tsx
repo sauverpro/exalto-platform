@@ -1,17 +1,10 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
-
-export type AccountType = "customer" | "wholesaler";
-
-export interface User {
-  name: string;
-  email: string;
-  phone: string;
-
-}
+import type { UserResponse } from "../api/auth";
 
 interface UserContextValue {
-  user: User | null;
-  login: (user: User) => void;
+  user: UserResponse | null;
+  token: string | null;
+  login: (user: UserResponse, token: string) => void;
   logout: () => void;
   isLoggedIn: boolean;
 }
@@ -19,13 +12,28 @@ interface UserContextValue {
 const UserContext = createContext<UserContextValue | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserResponse | null>(() => {
+    const stored = localStorage.getItem("user");
+    return stored ? JSON.parse(stored) : null;
+  });
+  const [token, setToken] = useState<string | null>(() => localStorage.getItem("token"));
 
-  const login = (userData: User) => setUser(userData);
-  const logout = () => setUser(null);
+  const login = (userData: UserResponse, authToken: string) => {
+    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("token", authToken);
+    setUser(userData);
+    setToken(authToken);
+  };
+
+  const logout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    setUser(null);
+    setToken(null);
+  };
 
   return (
-    <UserContext.Provider value={{ user, login, logout, isLoggedIn: !!user }}>
+    <UserContext.Provider value={{ user, token, login, logout, isLoggedIn: !!user }}>
       {children}
     </UserContext.Provider>
   );

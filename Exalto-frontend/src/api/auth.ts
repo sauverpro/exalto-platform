@@ -5,11 +5,8 @@ const API_URL = "http://127.0.0.1:8000/api";
 export interface RegisterData {
   full_name: string;
   email: string;
-  phone_number?: string;
+  phone_number: string;
   password: string;
-  role: string;
-  // accountType: "individual" | "business"; 
-  // company?: string; 
 }
 
 export interface LoginData {
@@ -21,20 +18,23 @@ export interface UserResponse {
   id: number;
   full_name: string;
   email: string;
-  role: string;
-  // company_name?: string;
+  role: "client" | "admin" | "sales_manager";
+  phone_number: string;
 }
 
 export interface LoginResponse {
+  message: string;
   token: string;
   user: UserResponse;
 }
 
+export interface RegisterResponse {
+  message: string;
+  role: string;
+}
 
-
-export const registerUser = async (data: RegisterData) => {
-  const response = await axios.post(`${API_URL}/auth/register`, data);
-
+export const registerUser = async (data: RegisterData): Promise<RegisterResponse> => {
+  const response = await axios.post<RegisterResponse>(`${API_URL}/auth/register`, data);
   return response.data;
 };
 

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, CheckCircle2, User, Building2 } from "lucide-react";
 import { registerUser } from "../api/auth";
-import logoImage from "../assets/logo image.png";
+import logoImage from "../assets/logo-image.png";
 import wineImage from "../assets/sugarcane-wine.jpg";
 
 export default function RegisterPage() {
@@ -23,16 +23,16 @@ export default function RegisterPage() {
     setError("");
     setSuccess("");
     try {
-      const data = await registerUser({ full_name: form.name, email: form.email, phone_number: form.phone, password: form.password, role: accountType,
-   });
+      const data = await registerUser({ full_name: form.name, email: form.email, phone_number: form.phone, password: form.password });
       console.log("Registration successful:", data);
       setSuccess("Account created! Redirecting...");
       setTimeout(() => navigate("/login"), 1200);
     } catch (err: any) {
-      if (err.response?.data?.errors) {
-        setError(Object.values(err.response.data.errors).flat().join(" "));
+      const msg = err.response?.data?.message;
+      if (msg && typeof msg === "object") {
+        setError(Object.values(msg).flat().join(" "));
       } else {
-        setError(err.response?.data?.message || "Registration failed. Please try again.");
+        setError(msg || "Registration failed. Please try again.");
       }
     } finally {
       setLoading(false);

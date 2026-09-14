@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import logoImage from "../assets/logo image.png";
+import logoImage from "../assets/logo-image.png";
 import { loginUser } from "../api/auth";
+import { useUser } from "../context/UserContext";
 
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  
-  // 🔐 This handles the redirect fallbacks safely
+  const { login } = useUser();
   const from = (location.state as any)?.from || "";
 
   const [email, setEmail] = useState("");
@@ -27,38 +27,21 @@ const Login = () => {
       // Send credentials Laravel API
       const data = await loginUser({ email, password });
       
-      console.log("Login successful:", data);
-      
-      // Save authentication details in browser storage
-      localStorage.setItem("token", data.token);
+      login(data.user, data.token);
 
-      // 🔐 FIX: Safely check if user object exists before trying to read the role string
-      if (data.user) {
-        localStorage.setItem("user", JSON.stringify(data.user));
-      }
-
-      // 🔐 FIX: Fallback to a standard dashboard if the role isn't explicitly returned in the payload
-      const userRole = data.user?.role || "customer"; 
-      
-      const dashboardRedirect = 
-        userRole === "business" 
-          ? "/business-dashboard" 
+      const dashboardRedirect =
+        data.user.role === "admin" || data.user.role === "sales_manager"
+          ? "/admin-dashboard"
           : "/customer-dashboard";
 
-      // Dynamic routing path check based on the role string
-      const targetRoute = from || dashboardRedirect;
-      navigate(targetRoute, { replace: true });
+      navigate(from || dashboardRedirect, { replace: true });
       
     } catch (err: any) {
-      console.error("Login process error:", err); // Log the actual error to catch runtime crashes!
-      
-      // catch standard backend error strings or array validation errors
-      if (err.response?.data?.errors) {
-        setError(Object.values(err.response.data.errors).flat().join(" "));
-      } else if (err.response?.data?.message) {
-        setError(err.response.data.message);
+      const msg = err.response?.data?.message;
+      if (msg && typeof msg === "object") {
+        setError(Object.values(msg).flat().join(" "));
       } else {
-        setError(err.message || "Invalid credentials. Please try again.");
+        setError(err.response?.data?.error || msg || "Invalid credentials. Please try again.");
       }
     } finally {
       setLoading(false);
