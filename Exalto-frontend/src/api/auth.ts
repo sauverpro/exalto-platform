@@ -25,7 +25,7 @@ export interface UserResponse {
 export interface LoginResponse {
   message: string;
   token: string;
-  user: UserResponse;
+  data: UserResponse;
 }
 
 export interface RegisterResponse {

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('phone_number')->unique();
             $table->string('role')->default('user');
             $table->boolean('is_active')->default(true);
-            $table->boolean('is_verified');
+            $table->boolean('is_verified')->default(true);
             $table->rememberToken();
             $table->timestamps();
         });

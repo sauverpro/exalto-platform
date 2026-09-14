@@ -25,12 +25,15 @@ const Login = () => {
 
     try {
       // Send credentials Laravel API
+      //console.log(email);
       const data = await loginUser({ email, password });
-      
-      login(data.user, data.token);
+      //console.log(data);
+      login(data.data, data.token);
+     // let's get user data from api end point
+       
 
       const dashboardRedirect =
-        data.user.role === "admin" || data.user.role === "sales_manager"
+        data.data.role === "admin" || data.data.role === "sales_manager"
           ? "/admin-dashboard"
           : "/customer-dashboard";
 
@@ -38,6 +41,7 @@ const Login = () => {
       
     } catch (err: any) {
       const msg = err.response?.data?.message;
+      
       if (msg && typeof msg === "object") {
         setError(Object.values(msg).flat().join(" "));
       } else {
