@@ -8,7 +8,7 @@ use App\Models\Address;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Str;
 class OrderController extends Controller
 {
     // get all orders for authenticated user
@@ -57,11 +57,28 @@ class OrderController extends Controller
         if ($user && $address->user_id !== $user->id) {
             return response()->json(['message' => 'Invalid address'], 403);
         }
+        if($user){
+            $order = Order::create([
+            'address_id' => $address->id,
+            'user_id' => $user->id,
+            'status' => 'pending',
+            'shipping_fee' => $request->shipping_fee,
+            'currency' => $request->currency,
+            'notes' => $request->notes,
+        ]);
+
+        $order->load(['address', 'payments', 'orderItems.product']);
+
+        return response()->json([
+            'data' => $order,
+            'message' => 'Order created'
+        ], 201); 
+        }
 
         // create order with only user-supplied fields
         $order = Order::create([
             'address_id' => $address->id,
-            'user_id' => $user ? $user->id : null,
+            'user_id' => Str::uuid(),
             'status' => 'pending',
             'shipping_fee' => $request->shipping_fee,
             'currency' => $request->currency,

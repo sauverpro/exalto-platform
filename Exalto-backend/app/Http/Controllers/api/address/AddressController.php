@@ -6,7 +6,7 @@ use App\Models\Address;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Str;
 
 class AddressController extends Controller
 {
@@ -33,9 +33,7 @@ class AddressController extends Controller
             'full_name' => 'required|string|max:255',
             'phone_number' => 'required|string|max:20',
             'district' => 'required|string|max:100',
-            'sector' => 'required|string|max:100',
-            'street' => 'nullable|string|max:255',
-            'is_default' => 'boolean'
+            'sector' => 'required|string|max:100'
         ]);
 
         if ($validator->fails()) {
@@ -60,7 +58,18 @@ class AddressController extends Controller
             Address::where('user_id', $user_id)
                 ->update(['is_default' => false]);
         }
-        $data['user_id'] = $user_id;
+        if($user){
+             $data['user_id'] = $user->id;
+             $address = Address::create($data);
+            return response()->json([
+            'success' => true,
+            'data' => $address,
+            'message' => 'Address created successfully'
+        ], 201);
+        }
+       // if not logged in, we create default user_id
+        $userId = Str::uuid();
+        $data['user_id'] = $userId;
         $address = Address::create($data);
 
         return response()->json([
