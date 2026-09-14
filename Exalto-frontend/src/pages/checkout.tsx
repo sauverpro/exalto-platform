@@ -11,9 +11,12 @@ export default function CheckoutPage() {
   const { items, subtotal, clearCart } = useCart();
   const { user, token } = useUser();
   const [step, setStep] = useState(0);
-  const [delivery, setDelivery] = useState({ name: "", phone: "", address: "", city: "", notes: "", date: "" });
+  const [delivery, setDelivery] = useState({
+    name: "", phone: "", address: "", city: "", sector: "", notes: "", date: "",
+  });
+  const [payment, setPayment] = useState({ method: "momo", momoNumber: "" });
+  const [processing, setProcessing] = useState(false);
 
-  // Pre-fill from saved default address, fallback to user profile
   useEffect(() => {
     if (!user) return;
     if (token) {
@@ -27,15 +30,15 @@ export default function CheckoutPage() {
               phone:   prev.phone   || def.phone_number,
               address: prev.address || def.street || "",
               city:    prev.city    || def.district,
+              sector:  prev.sector  || def.sector,
             }));
-            return;
+          } else {
+            setDelivery((prev) => ({
+              ...prev,
+              name:  prev.name  || user.full_name,
+              phone: prev.phone || user.phone_number,
+            }));
           }
-          // No saved address — fallback to user profile
-          setDelivery((prev) => ({
-            ...prev,
-            name:  prev.name  || user.full_name,
-            phone: prev.phone || user.phone_number,
-          }));
         })
         .catch(() => {
           setDelivery((prev) => ({
@@ -52,8 +55,6 @@ export default function CheckoutPage() {
       }));
     }
   }, [user, token]);
-  const [payment, setPayment] = useState({ method: "momo", momoNumber: "" });
-  const [processing, setProcessing] = useState(false);
 
   const handleDeliverySubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -123,14 +124,13 @@ export default function CheckoutPage() {
         </div>
 
         {step === 2 ? (
-          /* Confirmation */
           <div className="mx-auto max-w-lg rounded-2xl border border-green-200 bg-green-50 p-12 text-center">
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
               <CheckCircle2 size={40} className="text-green-500" />
             </div>
             <h2 className="mt-6 text-2xl font-black text-[#251c18]">Order Confirmed!</h2>
             <p className="mt-3 text-sm leading-6 text-[#77716d]">
-              Thank you for your order. We've received your payment and will process your order shortly. You'll receive a confirmation notification.
+              Thank you for your order. We've received your payment and will process your order shortly.
             </p>
             <div className="mt-6 rounded-xl border border-green-200 bg-white p-4 text-left">
               <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#77716d]">Order Summary</p>
@@ -139,10 +139,10 @@ export default function CheckoutPage() {
               <p className="mt-2 text-sm font-bold text-[#c94708]">Total Paid: Fr {subtotal.toLocaleString()}</p>
             </div>
             <div className="mt-6 flex flex-col gap-3">
-              <Link to="/customer-dashboard" className="w-full bg-[#c94708] py-3 text-sm font-bold text-white hover:bg-[#9f3506] transition text-center">
+              <Link to="/customer-dashboard" className="w-full bg-[#c94708] py-3 text-center text-sm font-bold text-white hover:bg-[#9f3506] transition">
                 Track My Order
               </Link>
-              <Link to="/shop" className="w-full border border-[#eadfce] py-3 text-sm font-bold text-[#251c18] hover:border-[#c94708] transition text-center">
+              <Link to="/shop" className="w-full border border-[#eadfce] py-3 text-center text-sm font-bold text-[#251c18] hover:border-[#c94708] transition">
                 Continue Shopping
               </Link>
             </div>
@@ -162,32 +162,25 @@ export default function CheckoutPage() {
                   </div>
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div>
-                      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">Full Name </label>
+                      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">Full Name</label>
                       <input required value={delivery.name} onChange={(e) => setDelivery({ ...delivery, name: e.target.value })} className="w-full border border-[#ded5cd] px-4 py-3 text-sm outline-none focus:border-[#c94708]" placeholder="Your full name" />
                     </div>
                     <div>
-                      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">Phone Number </label>
+                      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">Phone Number</label>
                       <input required value={delivery.phone} onChange={(e) => setDelivery({ ...delivery, phone: e.target.value })} className="w-full border border-[#ded5cd] px-4 py-3 text-sm outline-none focus:border-[#c94708]" placeholder="+250 7XX XXX XXX" />
                     </div>
                     <div className="sm:col-span-2">
-                      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">Delivery Address </label>
+                      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">Delivery Address</label>
                       <input required value={delivery.address} onChange={(e) => setDelivery({ ...delivery, address: e.target.value })} className="w-full border border-[#ded5cd] px-4 py-3 text-sm outline-none focus:border-[#c94708]" placeholder="Street, neighbourhood" />
                     </div>
                     <div>
-                      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">City / District </label>
+                      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">City / District</label>
                       <input required value={delivery.city} onChange={(e) => setDelivery({ ...delivery, city: e.target.value })} className="w-full border border-[#ded5cd] px-4 py-3 text-sm outline-none focus:border-[#c94708]" placeholder="e.g. Kigali" />
                     </div>
-                     
-<div>
-  <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">
-    Sector
-  </label>
-  <input type="text" required value={delivery.Sector} onChange={(e) => setDelivery({ ...delivery, Sector: e.target.value })}
-    className="w-full border border-[#ded5cd] px-4 py-3 text-sm capitalize outline-none transition-colors duration-200 focus:border-[#c94708] placeholder:text-gray-400"
-    placeholder="e.g. Remera, Kacyiru"
-  />
-</div>
-                   
+                    <div>
+                      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">Sector</label>
+                      <input required value={delivery.sector} onChange={(e) => setDelivery({ ...delivery, sector: e.target.value })} className="w-full border border-[#ded5cd] px-4 py-3 text-sm outline-none focus:border-[#c94708]" placeholder="e.g. Remera, Kacyiru" />
+                    </div>
                     <div>
                       <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">Preferred Delivery Date</label>
                       <input type="date" value={delivery.date} onChange={(e) => setDelivery({ ...delivery, date: e.target.value })} className="w-full border border-[#ded5cd] px-4 py-3 text-sm outline-none focus:border-[#c94708]" />
@@ -212,7 +205,6 @@ export default function CheckoutPage() {
                     <h2 className="text-lg font-bold text-[#251c18]">Payment</h2>
                   </div>
 
-                  {/* Payment methods */}
                   <div className="mb-6 grid gap-3 sm:grid-cols-2">
                     {[
                       { id: "momo", label: "Mobile Money", sub: "MTN MoMo / Airtel Money", icon: "📱" },
@@ -225,7 +217,7 @@ export default function CheckoutPage() {
                           <p className="text-sm font-bold text-[#251c18]">{label}</p>
                           <p className="text-xs text-[#77716d]">{sub}</p>
                         </div>
-                        <div className={`ml-auto h-5 w-5 rounded-full border-2 flex items-center justify-center ${payment.method === id ? "border-[#c94708]" : "border-[#ded5cd]"}`}>
+                        <div className={`ml-auto flex h-5 w-5 items-center justify-center rounded-full border-2 ${payment.method === id ? "border-[#c94708]" : "border-[#ded5cd]"}`}>
                           {payment.method === id && <div className="h-2.5 w-2.5 rounded-full bg-[#c94708]" />}
                         </div>
                       </label>
@@ -253,7 +245,7 @@ export default function CheckoutPage() {
                       <p className="text-xs font-bold text-[#251c18]">Delivery to: {delivery.address}, {delivery.city}</p>
                       <p className="text-xs text-[#77716d]">{delivery.name} · {delivery.phone}</p>
                     </div>
-                    <button type="button" onClick={() => setStep(0)} className="ml-auto text-xs font-semibold text-[#c94708] hover:underline flex-shrink-0">Edit</button>
+                    <button type="button" onClick={() => setStep(0)} className="ml-auto flex-shrink-0 text-xs font-semibold text-[#c94708] hover:underline">Edit</button>
                   </div>
 
                   <button type="submit" disabled={processing} className="w-full bg-[#c94708] py-4 text-sm font-bold text-white hover:bg-[#9f3506] transition disabled:opacity-70">
@@ -262,9 +254,7 @@ export default function CheckoutPage() {
                         <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
                         Processing Payment...
                       </span>
-                    ) : (
-                      `Pay Fr ${subtotal.toLocaleString()}`
-                    )}
+                    ) : `Pay Fr ${subtotal.toLocaleString()}`}
                   </button>
                 </form>
               )}
@@ -280,7 +270,7 @@ export default function CheckoutPage() {
                       <img src={product.image} alt={product.name} className="h-14 w-14 rounded-lg object-cover" />
                       <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#c94708] text-[10px] font-bold text-white">{quantity}</span>
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold text-[#251c18]">{product.name}</p>
                       <p className="text-xs text-[#77716d]">Fr {product.price.toLocaleString()} each</p>
                     </div>
