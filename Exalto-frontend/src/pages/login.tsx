@@ -35,7 +35,7 @@ const Login = () => {
       const dashboardRedirect =
         data.data.role === "admin" || data.data.role === "sales_manager"
           ? "/admin-dashboard"
-          : "/customer-dashboard";
+          : "/shop";
 
       navigate(from || dashboardRedirect, { replace: true });
       

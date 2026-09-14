@@ -1,18 +1,21 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { Heart, Search, ShoppingCart, Menu, X, UserRound } from 'lucide-react'
+import { Heart, Search, ShoppingCart, Menu, X, UserRound, LogOut, LayoutDashboard } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { useFavorites } from '../context/FavoritesContext'
+import { useUser } from '../context/UserContext'
 import logoImage from '../assets/logo-image.png'
 
 function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
   const { itemCount } = useCart()
   const { favorites } = useFavorites()
+  const { user, isLoggedIn, logout } = useUser()
   const navigate = useNavigate()
   const { pathname } = useLocation()
 
-  useEffect(() => { setMobileMenuOpen(false) }, [pathname])
+  useEffect(() => { setMobileMenuOpen(false); setUserMenuOpen(false) }, [pathname])
 
   const isActive = (path: string) => pathname === path
 
@@ -72,13 +75,38 @@ function Navbar() {
             {favorites.length > 0 && <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#c94708] text-[9px] font-bold text-white">{favorites.length}</span>}
           </Link>
 
-          <Link
-            to="/login"
-            aria-label="Account"
-            className="hidden h-9 w-9 sm:flex items-center justify-center rounded-full bg-[#f3efe9] text-[#c94708] hover:bg-[#eadfce] transition"
-          >
-            <UserRound size={17} />
-          </Link>
+          {isLoggedIn ? (
+            <div className="relative hidden sm:block">
+              <button
+                type="button"
+                onClick={() => setUserMenuOpen((o) => !o)}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-[#c94708] text-white text-xs font-bold hover:bg-[#9f3506] transition"
+                aria-label="User menu"
+              >
+                {user?.full_name?.[0]?.toUpperCase() ?? <UserRound size={17} />}
+              </button>
+              {userMenuOpen && (
+                <div className="absolute right-0 top-11 z-50 w-48 rounded-xl border border-[#eadfce] bg-white shadow-lg py-2">
+                  <p className="px-4 py-2 text-xs font-semibold text-[#251c18] truncate">{user?.full_name}</p>
+                  <p className="px-4 pb-2 text-[10px] text-[#9a8a82] truncate border-b border-[#eadfce]">{user?.email}</p>
+                  <Link to="/customer-dashboard" className="flex items-center gap-2 px-4 py-2.5 text-sm text-[#251c18] hover:bg-[#f3efe9]">
+                    <LayoutDashboard size={14} /> My Dashboard
+                  </Link>
+                  <button onClick={() => { logout(); setUserMenuOpen(false); navigate('/'); }} className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50">
+                    <LogOut size={14} /> Sign Out
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              aria-label="Account"
+              className="hidden h-9 w-9 sm:flex items-center justify-center rounded-full bg-[#f3efe9] text-[#c94708] hover:bg-[#eadfce] transition"
+            >
+              <UserRound size={17} />
+            </Link>
+          )}
 
           <Link
             to="/shop"

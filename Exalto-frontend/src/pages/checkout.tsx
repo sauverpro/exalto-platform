@@ -1,14 +1,57 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChevronRight, CheckCircle2, Smartphone, MapPin, FileText } from "lucide-react";
 import { useCart } from "../context/CartContext";
+import { useUser } from "../context/UserContext";
+import { fetchAddresses } from "../api/customer";
 
 const STEPS = ["Delivery", "Payment", "Confirmation"];
 
 export default function CheckoutPage() {
   const { items, subtotal, clearCart } = useCart();
+  const { user, token } = useUser();
   const [step, setStep] = useState(0);
   const [delivery, setDelivery] = useState({ name: "", phone: "", address: "", city: "", notes: "", date: "" });
+
+  // Pre-fill from saved default address, fallback to user profile
+  useEffect(() => {
+    if (!user) return;
+    if (token) {
+      fetchAddresses(token)
+        .then((addresses) => {
+          const def = addresses.find((a) => a.is_default) ?? addresses[0];
+          if (def) {
+            setDelivery((prev) => ({
+              ...prev,
+              name:    prev.name    || def.full_name,
+              phone:   prev.phone   || def.phone_number,
+              address: prev.address || def.street || "",
+              city:    prev.city    || def.district,
+            }));
+            return;
+          }
+          // No saved address — fallback to user profile
+          setDelivery((prev) => ({
+            ...prev,
+            name:  prev.name  || user.full_name,
+            phone: prev.phone || user.phone_number,
+          }));
+        })
+        .catch(() => {
+          setDelivery((prev) => ({
+            ...prev,
+            name:  prev.name  || user.full_name,
+            phone: prev.phone || user.phone_number,
+          }));
+        });
+    } else {
+      setDelivery((prev) => ({
+        ...prev,
+        name:  prev.name  || user.full_name,
+        phone: prev.phone || user.phone_number,
+      }));
+    }
+  }, [user, token]);
   const [payment, setPayment] = useState({ method: "momo", momoNumber: "" });
   const [processing, setProcessing] = useState(false);
 
@@ -134,10 +177,17 @@ export default function CheckoutPage() {
                       <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">City / District </label>
                       <input required value={delivery.city} onChange={(e) => setDelivery({ ...delivery, city: e.target.value })} className="w-full border border-[#ded5cd] px-4 py-3 text-sm outline-none focus:border-[#c94708]" placeholder="e.g. Kigali" />
                     </div>
-                    <div>
-                      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">Sector</label>
-                      <input required value={delivery.name} onChange={(e) => setDelivery({ ...delivery, name: e.target.value })} className="w-full border border-[#ded5cd] px-4 py-3 text-sm outline-none focus:border-[#c94708]" placeholder="Sector" />
-                    </div>
+                     
+<div>
+  <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">
+    Sector
+  </label>
+  <input type="text" required value={delivery.Sector} onChange={(e) => setDelivery({ ...delivery, Sector: e.target.value })}
+    className="w-full border border-[#ded5cd] px-4 py-3 text-sm capitalize outline-none transition-colors duration-200 focus:border-[#c94708] placeholder:text-gray-400"
+    placeholder="e.g. Remera, Kacyiru"
+  />
+</div>
+                   
                     <div>
                       <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">Preferred Delivery Date</label>
                       <input type="date" value={delivery.date} onChange={(e) => setDelivery({ ...delivery, date: e.target.value })} className="w-full border border-[#ded5cd] px-4 py-3 text-sm outline-none focus:border-[#c94708]" />
