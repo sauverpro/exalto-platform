@@ -20,7 +20,7 @@ class Payment extends Model
 
     public function order()
     {
-        return $this->belongsTo('App\\Models\\Orders');
+        return $this->belongsTo('App\\Models\\Order');
     }
 
     public function user()

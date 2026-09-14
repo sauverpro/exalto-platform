@@ -38,10 +38,10 @@ class PaymentController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
+
         // Verify order belongs to user
         $user = Auth::user();
-        $order = Order::where('user_id', $user->id)
-            ->where('id', $request->order_id)
+        $order = Order::where('id', $request->order_id)
             ->first();
 
         if (!$order) {
@@ -49,7 +49,7 @@ class PaymentController extends Controller
         }
 
         $data = $request->all();
-        $data['user_id'] = $user->id;
+        $data['user_id'] = $order->user_id;
         $data['status'] = $request->status ?? 'pending';
         $data['paid_at'] = $data['status'] === 'completed' ? now() : null;
 

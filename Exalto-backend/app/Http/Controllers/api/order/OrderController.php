@@ -8,7 +8,7 @@ use App\Models\Address;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Str;
+use Illuminate\Support\Str;
 class OrderController extends Controller
 {
     // get all orders for authenticated user

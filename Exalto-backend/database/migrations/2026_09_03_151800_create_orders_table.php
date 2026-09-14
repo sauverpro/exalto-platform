@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->foreignId('address_id')->constained('addresses')->cascadeOnDelete();
-            $table->foreignId('user_id')->nullable()->constained('User')->nullOnDelete();
+            $table->text('user_id')->nullable();
             $table->string('status');
             $table->integer('subtotal')->default(0);
             $table->integer('shipping_fee');

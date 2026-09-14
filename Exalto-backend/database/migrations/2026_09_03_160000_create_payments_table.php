@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->text('user_id')->nullable();
             $table->decimal('amount', 12, 2);
             $table->string('currency', 8)->default('USD');
             $table->string('method')->nullable();
