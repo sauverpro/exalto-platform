@@ -11,12 +11,20 @@ interface UserContextValue {
 
 const UserContext = createContext<UserContextValue | undefined>(undefined);
 
+function safeGet<T>(key: string): T | null {
+  try {
+    const val = localStorage.getItem(key);
+    if (!val || val === "undefined" || val === "null") return null;
+    return JSON.parse(val) as T;
+  } catch {
+    localStorage.removeItem(key);
+    return null;
+  }
+}
+
 export function UserProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<UserResponse | null>(() => {
-    const stored = localStorage.getItem("user");
-    return stored ? JSON.parse(stored) : null;
-  });
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem("token"));
+  const [user, setUser] = useState<UserResponse | null>(() => safeGet<UserResponse>("user"));
+  const [token, setToken] = useState<string | null>(() => safeGet<string>("token"));
 
   const login = (userData: UserResponse, authToken: string) => {
     localStorage.setItem("user", JSON.stringify(userData));
@@ -41,6 +49,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
 export function useUser() {
   const ctx = useContext(UserContext);
-  if (!ctx) throw new Error("User must be used inside UserProvider");
+  if (!ctx) throw new Error("useUser must be used inside UserProvider");
   return ctx;
 }

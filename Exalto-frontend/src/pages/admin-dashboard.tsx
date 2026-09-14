@@ -4,7 +4,7 @@ import {
   LogOut, Menu, X, BarChart3, ShoppingBag, Users, Settings,
   TrendingUp, Package, Bell, ChevronRight, Edit2, Trash2, Sun, Moon, FileText, Globe2, Search, Image, LayoutTemplate, Save, Upload, Trash,
 } from "lucide-react";
-import { useAdmin } from "../context/AdminContext";
+import { useUser } from "../context/UserContext";
 import { products, type Product } from "../data/product";
 
 const NAV_ITEMS = [
@@ -90,7 +90,9 @@ const STATS = [
 ];
 
 export default function AdminDashboard() {
-  const { isAdminLoggedIn, adminEmail, logoutAdmin } = useAdmin();
+  const { user, logout: logoutAdmin } = useUser();
+  const isAdminLoggedIn = !!user && (user.role === "admin" || user.role === "sales_manager");
+  const adminEmail = user?.email ?? null;
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>("overview");
@@ -235,7 +237,7 @@ export default function AdminDashboard() {
   }, [adminSettings]);
 
   if (!isAdminLoggedIn) {
-    navigate("/admin-login");
+    navigate("/login");
     return null;
   }
 
