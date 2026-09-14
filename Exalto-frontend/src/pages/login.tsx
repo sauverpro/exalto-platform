@@ -18,7 +18,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -31,29 +31,40 @@ const Login = () => {
       
       // Save authentication details in browser storage
       localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
 
-      // Dynamic routing path check based on the Laravel role string
+      // 🔐 FIX: Safely check if user object exists before trying to read the role string
+      if (data.user) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+      }
+
+      // 🔐 FIX: Fallback to a standard dashboard if the role isn't explicitly returned in the payload
+      const userRole = data.user?.role || "customer"; 
+      
       const dashboardRedirect = 
-        data.user.role === "business" 
+        userRole === "business" 
           ? "/business-dashboard" 
           : "/customer-dashboard";
 
-      // 🔐 FIX: Explicitly check and read the 'from' variable so the build passes
+      // Dynamic routing path check based on the role string
       const targetRoute = from || dashboardRedirect;
       navigate(targetRoute, { replace: true });
       
     } catch (err: any) {
+      console.error("Login process error:", err); // Log the actual error to catch runtime crashes!
+      
       // catch standard backend error strings or array validation errors
       if (err.response?.data?.errors) {
         setError(Object.values(err.response.data.errors).flat().join(" "));
+      } else if (err.response?.data?.message) {
+        setError(err.response.data.message);
       } else {
-        setError(err.response?.data?.message || "Invalid credentials. Please try again.");
+        setError(err.message || "Invalid credentials. Please try again.");
       }
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="flex h-screen overflow-hidden">
