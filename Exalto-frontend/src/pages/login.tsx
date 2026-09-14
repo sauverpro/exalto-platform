@@ -160,9 +160,9 @@ const Login = () => {
       </div>
 
       {/* ── Right: Image Visual Sidebar ── */}
-      <div className="hidden md:flex md:w-[45%] h-full bg-[#251c18] items-center justify-center p-12">
+   {/* <div className="hidden md:flex md:w-[45%] h-full bg-[#251c18] items-center justify-center p-12">
         <p className="text-white text-xl font-medium italic text-center">"Welcome back to Exalto Premium Beverages"</p>
-      </div>
+      </div>    */}
 
     </div>
   );
