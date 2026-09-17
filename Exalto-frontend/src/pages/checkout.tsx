@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { ChevronRight, CheckCircle2, Smartphone, MapPin, FileText } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useUser } from "../context/UserContext";
-import { fetchAddresses } from "../api/customer";
+import { createAddress, createOrder, createOrderItem, createPayment, fetchAddresses } from "../api/customer";
 
 const STEPS = ["Delivery", "Payment", "Confirmation"];
 
@@ -16,6 +16,7 @@ export default function CheckoutPage() {
   });
   const [payment, setPayment] = useState({ method: "momo", momoNumber: "" });
   const [processing, setProcessing] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
 
   useEffect(() => {
     if (!user) return;
@@ -63,24 +64,43 @@ export default function CheckoutPage() {
 
   const handlePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!token || !user) return;
     setProcessing(true);
-    await new Promise((r) => setTimeout(r, 1800));
-    const newOrder = {
-      id: `EX-${new Date().getFullYear()}-${Date.now().toString().slice(-5)}`,
-      customer: delivery.name,
-      email: delivery.phone,
-      items: items.map(({ product, quantity }) => `${product.name} x ${quantity}`).join(", "),
-      total: subtotal,
-      paymentStatus: "Paid",
-      status: "Processing",
-      date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-    };
-    const savedOrders = localStorage.getItem("exalto-admin-orders");
-    const orders = savedOrders ? JSON.parse(savedOrders) : [];
-    localStorage.setItem("exalto-admin-orders", JSON.stringify([...orders, newOrder]));
-    setProcessing(false);
-    clearCart?.();
-    setStep(2);
+    setCheckoutError("");
+    try {
+      const address = await createAddress(token, {
+        full_name: delivery.name,
+        phone_number: delivery.phone,
+        district: delivery.city,
+        sector: delivery.sector,
+        street: delivery.address,
+      });
+      const order = await createOrder(token, {
+        address_id: address.id,
+        shipping_fee: 0,
+        currency: "RWF",
+        notes: delivery.notes || undefined,
+      });
+      await Promise.all(items.map(({ product, quantity }) => createOrderItem(token, {
+        order_id: order.id,
+        product_id: product.id,
+        quantity,
+      })));
+      await createPayment(token, {
+        order_id: order.id,
+        amount: subtotal,
+        currency: "RWF",
+        method: payment.method === "momo" ? "mobile_money" : "cash",
+        status: "pending",
+      });
+      clearCart();
+      setStep(2);
+    } catch (error: any) {
+      const message = error.response?.data?.message;
+      setCheckoutError(typeof message === "string" ? message : "We could not complete your order. Please try again.");
+    } finally {
+      setProcessing(false);
+    }
   };
 
   if (items.length === 0 && step < 2) {
@@ -198,6 +218,7 @@ export default function CheckoutPage() {
 
               {step === 1 && (
                 <form onSubmit={handlePaymentSubmit} className="rounded-2xl border border-[#eadfce] bg-white p-7 sm:p-8">
+                  {checkoutError && <p className="mb-5 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">{checkoutError}</p>}
                   <div className="mb-6 flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#c94708]/10">
                       <Smartphone size={18} className="text-[#c94708]" />

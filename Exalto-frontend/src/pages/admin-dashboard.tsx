@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   LogOut, Menu, X, BarChart3, ShoppingBag, Users, Settings,
-  TrendingUp, Package, Bell, ChevronRight, Edit2, Trash2, Sun, Moon, FileText, Globe2, Search, Image, LayoutTemplate, Save, Upload, Trash,
+  Bell, ChevronRight, Edit2, Trash2, Sun, Moon, FileText, Globe2, Search, Image, LayoutTemplate, Save, Upload, Trash,
 } from "lucide-react";
 import { useUser } from "../context/UserContext";
-import { products, type Product } from "../data/product";
+import { fetchAdminCustomers, fetchAdminPayments, fetchAdminProducts, updateOrderStatus as updateOrderStatusApi, updateProduct, deleteProduct as deleteProductApi, type AdminCustomer as AdminCustomerRecord, type AdminPayment } from "../api/admin";
+import type { Product } from "../data/product";
 
 const NAV_ITEMS = [
   { icon: BarChart3, label: "Overview", id: "overview" },
@@ -21,10 +22,10 @@ const NAV_ITEMS = [
 
 type Tab = (typeof NAV_ITEMS)[number]["id"];
 
-type OrderStatus = "Pending Payment" | "Paid" | "Processing" | "Packed" | "Shipped" | "Delivered" | "Cancelled";
+type OrderStatus = "Pending Payment" | "Processing" | "Completed" | "Cancelled";
 
 interface AdminOrder {
-  id: string;
+  id: number;
   customer: string;
   email: string;
   items: string;
@@ -34,13 +35,7 @@ interface AdminOrder {
   date: string;
 }
 
-const ORDER_STATUSES: OrderStatus[] = ["Pending Payment", "Paid", "Processing", "Packed", "Shipped", "Delivered", "Cancelled"];
-
-const INITIAL_ORDERS: AdminOrder[] = [
-  { id: "EX-2026-001", customer: "Jean Doe", email: "jean@example.com", items: "La Vie Passion Juice x 3", total: 27000, paymentStatus: "Paid", status: "Processing", date: "Sep 8, 2026" },
-  { id: "EX-2026-002", customer: "Sarah Kim", email: "sarah@example.com", items: "Vicas Sugarcane Wine x 2", total: 24000, paymentStatus: "Pending", status: "Pending Payment", date: "Sep 7, 2026" },
-  { id: "EX-2026-003", customer: "David Niyonzima", email: "david@example.com", items: "Passion Juice Export Carton x 1", total: 95000, paymentStatus: "Paid", status: "Shipped", date: "Sep 5, 2026" },
-];
+const ORDER_STATUSES: OrderStatus[] = ["Pending Payment", "Processing", "Completed", "Cancelled"];
 
 interface AdminCustomer {
   id: string;
@@ -71,55 +66,70 @@ interface MediaAsset {
   type: "image";
 }
 
-const INITIAL_CUSTOMERS: AdminCustomer[] = [
-  { id: "CUS-001", name: "Jean Doe", company: "Kigali Foods Ltd", email: "jean@example.com", phone: "+250 788 111 222", orders: 8, spending: 216000, status: "Active" },
-  { id: "CUS-002", name: "Sarah Kim", company: "Green Basket Market", email: "sarah@example.com", phone: "+250 788 333 444", orders: 5, spending: 145000, status: "Active" },
-  { id: "CUS-003", name: "David Niyonzima", company: "Niyo Imports", email: "david@example.com", phone: "+250 788 555 666", orders: 2, spending: 190000, status: "Pending" },
-];
+const orderStatusToApi: Record<OrderStatus, string> = { "Pending Payment": "pending", Processing: "processing", Completed: "completed", Cancelled: "cancelled" };
+const apiStatusToOrder: Record<string, OrderStatus> = { pending: "Pending Payment", processing: "Processing", completed: "Completed", cancelled: "Cancelled" };
 
-const INITIAL_QUOTATIONS: ExportQuotation[] = [
-  { id: "QUO-2026-001", company: "Niyo Imports", country: "Kenya", products: "Passion Juice Export Carton", quantity: "100 cartons", schedule: "October 2026", status: "New", date: "Sep 8, 2026" },
-  { id: "QUO-2026-002", company: "Mara Retail Group", country: "UAE", products: "Sugarcane Wine, Passion Juice", quantity: "500 cartons", schedule: "November 2026", status: "Reviewing", date: "Sep 6, 2026" },
-];
+function paymentsToOrders(payments: AdminPayment[]): AdminOrder[] {
+  const orders = new Map<number, AdminOrder>();
+  payments.forEach((payment) => {
+    if (!payment.order || orders.has(payment.order.id)) return;
+    orders.set(payment.order.id, {
+      id: payment.order.id,
+      customer: payment.user?.full_name ?? "Guest customer",
+      email: payment.user?.email ?? "",
+      items: payment.order.order_items?.map((item) => `${item.product?.name ?? "Product"} x ${item.quantity}`).join(", ") || "Order items unavailable",
+      total: Number(payment.order.total ?? payment.order.total_amount ?? payment.amount),
+      paymentStatus: payment.status === "completed" ? "Paid" : "Pending",
+      status: apiStatusToOrder[payment.order.status] ?? "Pending Payment",
+      date: new Date(payment.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    });
+  });
+  return [...orders.values()];
+}
 
-const STATS = [
-  { label: "Total Revenue", value: "Fr 21,000", change: "+12%", icon: TrendingUp, color: "text-emerald-400", bg: "bg-emerald-400/10" },
-  { label: "Total Products", value: "2", change: "+1", icon: Package, color: "text-[#c94708]", bg: "bg-[#c94708]/10" },
-  { label: "Total Orders", value: "2", change: "+2", icon: ShoppingBag, color: "text-blue-400", bg: "bg-blue-400/10" },
-  { label: "Customers", value: "18", change: "+5%", icon: Users, color: "text-purple-400", bg: "bg-purple-400/10" },
-];
+function mergeCustomers(customersData: AdminCustomerRecord[], payments: AdminPayment[]): AdminCustomer[] {
+  const customers = new Map<number, AdminCustomer>();
+  customersData.forEach((customer) => {
+    customers.set(customer.id, {
+      id: String(customer.id),
+      name: customer.full_name,
+      company: "",
+      email: customer.email,
+      phone: customer.phone_number,
+      orders: 0,
+      spending: 0,
+      status: "Active",
+    });
+  });
+  payments.forEach((payment) => {
+    if (!payment.user) return;
+    const customer = customers.get(payment.user.id) ?? { id: String(payment.user.id), name: payment.user.full_name, company: "", email: payment.user.email, phone: payment.user.phone_number, orders: 0, spending: 0, status: "Active" };
+    customer.orders += payment.order ? 1 : 0;
+    customer.spending += Number(payment.amount);
+    customers.set(payment.user.id, customer);
+  });
+  return [...customers.values()];
+}
 
 export default function AdminDashboard() {
-  const { user, logout: logoutAdmin } = useUser();
+  const { user, token, logout: logoutAdmin } = useUser();
   const isAdminLoggedIn = !!user && (user.role === "admin" || user.role === "sales_manager");
   const adminEmail = user?.email ?? null;
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [lightMode, setLightMode] = useState(false);
-  const [adminProducts, setAdminProducts] = useState<Product[]>(products);
+  const [adminProducts, setAdminProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [apiError, setApiError] = useState("");
   const [productSearch, setProductSearch] = useState("");
   const [productModalOpen, setProductModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [orders, setOrders] = useState<AdminOrder[]>(() => {
-    try {
-      const savedOrders = localStorage.getItem("exalto-admin-orders");
-      return savedOrders ? JSON.parse(savedOrders) as AdminOrder[] : INITIAL_ORDERS;
-    } catch {
-      return INITIAL_ORDERS;
-    }
-  });
+  const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [orderSearch, setOrderSearch] = useState("");
-  const [customers] = useState<AdminCustomer[]>(INITIAL_CUSTOMERS);
+  const [customers, setCustomers] = useState<AdminCustomer[]>([]);
   const [customerSearch, setCustomerSearch] = useState("");
-  const [quotations, setQuotations] = useState<ExportQuotation[]>(() => {
-    try {
-      const savedQuotations = localStorage.getItem("exalto-admin-quotations");
-      return savedQuotations ? JSON.parse(savedQuotations) as ExportQuotation[] : INITIAL_QUOTATIONS;
-    } catch {
-      return INITIAL_QUOTATIONS;
-    }
-  });
+  const [quotations, setQuotations] = useState<ExportQuotation[]>([]);
   const [quotationSearch, setQuotationSearch] = useState("");
   const [mediaAssets, setMediaAssets] = useState<MediaAsset[]>(() => {
     try {
@@ -217,12 +227,17 @@ export default function AdminDashboard() {
   });
 
   useEffect(() => {
-    localStorage.setItem("exalto-admin-orders", JSON.stringify(orders));
-  }, [orders]);
-
-  useEffect(() => {
-    localStorage.setItem("exalto-admin-quotations", JSON.stringify(quotations));
-  }, [quotations]);
+    if (!token || !isAdminLoggedIn) return;
+    setLoading(true);
+    Promise.all([fetchAdminProducts(token), fetchAdminPayments(token), fetchAdminCustomers(token)])
+      .then(([productData, paymentData, customerData]) => {
+        setAdminProducts(productData);
+        setOrders(paymentsToOrders(paymentData));
+        setCustomers(mergeCustomers(customerData, paymentData));
+      })
+      .catch(() => setApiError("Could not load dashboard data from the backend."))
+      .finally(() => setLoading(false));
+  }, [isAdminLoggedIn, token]);
 
   useEffect(() => {
     localStorage.setItem("exalto-admin-media", JSON.stringify(mediaAssets));
@@ -263,45 +278,35 @@ export default function AdminDashboard() {
           price: "",
           stock: "",
           description: "",
-          image: products[0]?.image ?? "",
+          image: "",
         });
     setProductModalOpen(true);
   };
 
-  const saveProduct = (event: React.FormEvent<HTMLFormElement>) => {
+  const saveProduct = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const price = Number(productForm.price);
     const stock = Number(productForm.stock);
     if (!productForm.name.trim() || !price || stock < 0) return;
 
-    if (editingProduct) {
-      setAdminProducts((current) => current.map((product) => product.id === editingProduct.id
-        ? { ...product, ...productForm, price, stock, name: productForm.name.trim() }
-        : product));
-    } else {
-      const id = Math.max(0, ...adminProducts.map((product) => product.id)) + 1;
-      setAdminProducts((current) => [...current, {
-        ...products[0],
-        id,
-        code: `EX-CUSTOM-${id}`,
-        name: productForm.name.trim(),
-        category: productForm.category,
-        price,
-        wholesalePrice: price,
-        exportPrice: price,
-        stock,
-        description: productForm.description,
-        image: productForm.image || products[0].image,
-        images: [productForm.image || products[0].image],
-        featured: false,
-      }]);
+    if (!token || !editingProduct) return;
+    try {
+      const updated = await updateProduct(token, editingProduct.id, { name: productForm.name.trim(), price, description: productForm.description, category_id: Number(editingProduct.category), stock_quantity: stock, packaging_type: editingProduct.packaging, country_of_origin: editingProduct.origin, unit: editingProduct.unit, quality_type: editingProduct.grade });
+      setAdminProducts((current) => current.map((product) => product.id === updated.id ? updated : product));
+      setProductModalOpen(false);
+    } catch {
+      setApiError("Could not save the product.");
     }
-    setProductModalOpen(false);
   };
 
-  const deleteProduct = (productId: number) => {
-    if (window.confirm("Delete this product from the admin list?")) {
-      setAdminProducts((current) => current.filter((product) => product.id !== productId));
+  const deleteProduct = async (productId: number) => {
+    if (window.confirm("Delete this product from the admin list?") && token) {
+      try {
+        await deleteProductApi(token, productId);
+        setAdminProducts((current) => current.filter((product) => product.id !== productId));
+      } catch {
+        setApiError("Could not delete the product.");
+      }
     }
   };
 
@@ -313,10 +318,14 @@ export default function AdminDashboard() {
     `${order.id} ${order.customer} ${order.email} ${order.items} ${order.status}`.toLowerCase().includes(orderSearch.toLowerCase()),
   );
 
-  const updateOrderStatus = (orderId: string, status: OrderStatus) => {
-    setOrders((current) => current.map((order) => order.id === orderId
-      ? { ...order, status, paymentStatus: status === "Pending Payment" ? "Pending" : "Paid" }
-      : order));
+  const updateOrderStatus = async (orderId: number, status: OrderStatus) => {
+    if (!token) return;
+    try {
+      await updateOrderStatusApi(token, orderId, orderStatusToApi[status]);
+      setOrders((current) => current.map((order) => order.id === orderId ? { ...order, status } : order));
+    } catch {
+      setApiError("Could not update the order status.");
+    }
   };
 
   const visibleCustomers = customers.filter((customer) =>
@@ -349,8 +358,14 @@ export default function AdminDashboard() {
 
   const paidOrders = orders.filter((order) => order.paymentStatus === "Paid");
   const revenue = paidOrders.reduce((total, order) => total + order.total, 0);
-  const deliveredOrders = orders.filter((order) => order.status === "Delivered").length;
-  const pendingOrders = orders.filter((order) => !["Delivered", "Cancelled"].includes(order.status)).length;
+  const completedOrders = orders.filter((order) => order.status === "Completed").length;
+  const pendingOrders = orders.filter((order) => !["Completed", "Cancelled"].includes(order.status)).length;
+  const stats = [
+    { label: "Total Revenue", value: `Fr ${revenue.toLocaleString()}`, change: "Live", icon: ShoppingBag, color: "text-emerald-400", bg: "bg-emerald-400/10" },
+    { label: "Total Products", value: String(adminProducts.length), change: "Live", icon: ShoppingBag, color: "text-[#c94708]", bg: "bg-[#c94708]/10" },
+    { label: "Total Orders", value: String(orders.length), change: "Live", icon: ShoppingBag, color: "text-blue-400", bg: "bg-blue-400/10" },
+    { label: "Customers", value: String(customers.length), change: "Live", icon: Users, color: "text-purple-400", bg: "bg-purple-400/10" },
+  ];
 
   return (
     <div className={`admin-dashboard flex min-h-screen bg-[#0d0906] text-white ${lightMode ? "admin-light" : ""}`}>
@@ -454,12 +469,14 @@ export default function AdminDashboard() {
         </header>
 
         <div className="p-8">
+          {apiError && <div className="mb-6 rounded-xl border border-red-900/50 bg-red-950/30 px-4 py-3 text-sm text-red-400">{apiError}</div>}
+          {loading && <div className="mb-6 rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-[#6b5e58]">Loading dashboard data...</div>}
           {/* OVERVIEW */}
           {activeTab === "overview" && (
             <div className="space-y-8">
               {/* Stats */}
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-                {STATS.map(({ label, value, change, icon: Icon, color, bg }) => (
+                {stats.map(({ label, value, change, icon: Icon, color, bg }) => (
                   <div key={label} className="rounded-2xl border border-[#1e1410] bg-[#0f0a08] p-6">
                     <div className="flex items-start justify-between">
                       <div>
@@ -500,25 +517,8 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Recent activity */}
-              <div className="rounded-2xl border border-[#1e1410] bg-[#0f0a08] p-6">
-                <h3 className="mb-5 text-sm font-bold uppercase tracking-[0.12em] text-white">Recent Activity</h3>
-                <div className="space-y-4">
-                  {[
-                    { action: "New order received", detail: "La Vie Passion Juice × 2", time: "2 min ago", dot: "bg-emerald-400" },
-                    { action: "Product viewed", detail: "Vicas Sugarcane Wine", time: "15 min ago", dot: "bg-blue-400" },
-                    { action: "Admin login", detail: adminEmail ?? "", time: "Just now", dot: "bg-[#c94708]" },
-                  ].map((item, i) => (
-                    <div key={i} className="flex items-start gap-4">
-                      <div className={`mt-1.5 h-2 w-2 flex-shrink-0 rounded-full ${item.dot}`} />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-white">{item.action}</p>
-                        <p className="text-xs text-[#4a3d38]">{item.detail}</p>
-                      </div>
-                      <span className="flex-shrink-0 text-xs text-[#3d3028]">{item.time}</span>
-                    </div>
-                  ))}
-                </div>
+              <div className="rounded-2xl border border-dashed border-[#2a1f1a] p-8 text-center text-sm text-[#6b5e58]">
+                Activity will appear here when the backend provides an activity endpoint.
               </div>
             </div>
           )}
@@ -715,7 +715,7 @@ export default function AdminDashboard() {
                   ["Paid Revenue", `Fr ${revenue.toLocaleString()}`, "text-emerald-400"],
                   ["Total Orders", String(orders.length), "text-blue-400"],
                   ["Pending Orders", String(pendingOrders), "text-amber-400"],
-                  ["Delivered Orders", String(deliveredOrders), "text-[#c94708]"],
+                  ["Completed Orders", String(completedOrders), "text-[#c94708]"],
                 ].map(([label, value, color]) => <div key={label} className="rounded-2xl border border-[#1e1410] bg-[#0f0a08] p-6"><p className="text-xs uppercase tracking-[0.12em] text-[#4a3d38]">{label}</p><p className={`mt-3 text-3xl font-black ${color}`}>{value}</p></div>)}
               </div>
               <div className="grid gap-6 lg:grid-cols-2">

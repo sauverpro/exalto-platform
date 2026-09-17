@@ -1,5 +1,6 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Product } from "../data/product";
+import { useUser } from "./UserContext";
 
 interface FavoritesContextValue {
   favorites: Product[];
@@ -12,7 +13,27 @@ interface FavoritesContextValue {
 const FavoritesContext = createContext<FavoritesContextValue | undefined>(undefined);
 
 export function FavoritesProvider({ children }: { children: ReactNode }) {
-  const [favorites, setFavorites] = useState<Product[]>([]);
+  const { user } = useUser();
+  const storageKey = `exalto-favorites-${user?.id ?? "guest"}`;
+  const [favorites, setFavorites] = useState<Product[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem(storageKey) ?? "[]") as Product[];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    try {
+      setFavorites(JSON.parse(localStorage.getItem(storageKey) ?? "[]") as Product[]);
+    } catch {
+      setFavorites([]);
+    }
+  }, [storageKey]);
+
+  useEffect(() => {
+    localStorage.setItem(storageKey, JSON.stringify(favorites));
+  }, [favorites, storageKey]);
 
   const value = useMemo<FavoritesContextValue>(() => {
     const isFavorite = (productId: number) => {

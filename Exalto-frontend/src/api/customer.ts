@@ -28,7 +28,7 @@ export interface Order {
   id: number;
   status: string;
   shipping_fee: number;
-  total_amount: number;
+  total: number;
   currency: string;
   notes: string | null;
   created_at: string;
@@ -41,6 +41,28 @@ export interface Order {
 export const fetchOrders = async (token: string): Promise<Order[]> => {
   const res = await axios.get(`${API_URL}/orders`, { headers: authHeaders(token) });
   return res.data?.data ?? [];
+};
+
+export const createOrder = async (
+  token: string,
+  data: { address_id: number; shipping_fee: number; currency: string; notes?: string },
+): Promise<Order> => {
+  const res = await axios.post(`${API_URL}/order/store`, data, { headers: authHeaders(token) });
+  return res.data.data;
+};
+
+export const createOrderItem = async (
+  token: string,
+  data: { order_id: number; product_id: number; quantity: number },
+): Promise<void> => {
+  await axios.post(`${API_URL}/orderitem/store`, data, { headers: authHeaders(token) });
+};
+
+export const createPayment = async (
+  token: string,
+  data: { order_id: number; amount: number; currency: string; method: string; status: "pending" | "completed" },
+): Promise<void> => {
+  await axios.post(`${API_URL}/payment/store`, data, { headers: authHeaders(token) });
 };
 
 // ── Addresses 

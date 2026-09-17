@@ -227,7 +227,7 @@ export default function CustomerDashboard() {
                               <p className="text-xs text-[#77716d]">{new Date(order.created_at).toLocaleDateString()}</p>
                             </div>
                             <div className="text-right">
-                              <p className="text-sm font-bold text-[#c94708]">Fr {Number(order.total_amount).toLocaleString()}</p>
+                              <p className="text-sm font-bold text-[#c94708]">Fr {Number(order.total).toLocaleString()}</p>
                               <span className={`mt-1 inline-block rounded-full border px-2 py-0.5 text-[10px] font-semibold ${STATUS_STYLE[sk] ?? "bg-gray-50 text-gray-600 border-gray-200"}`}>
                                 {order.status}
                               </span>
@@ -307,7 +307,7 @@ export default function CustomerDashboard() {
                           )}
 
                           <div className="mt-4 flex items-center justify-between border-t border-[#eadfce] pt-4">
-                            <p className="text-lg font-black text-[#c94708]">Fr {Number(order.total_amount).toLocaleString()}</p>
+                            <p className="text-lg font-black text-[#c94708]">Fr {Number(order.total).toLocaleString()}</p>
                             {sk === "pending" && (
                               <Link to="/checkout" className="rounded-lg bg-[#c94708] px-4 py-2 text-xs font-semibold text-white hover:bg-[#9f3506] transition">
                                 Pay Now
@@ -461,7 +461,7 @@ export default function CustomerDashboard() {
                             <tr key={order.id} className="border-b border-[#eadfce] hover:bg-[#fffdf8]">
                               <td className="px-5 py-4 text-sm font-bold text-[#251c18]">#{order.id}</td>
                               <td className="px-5 py-4 text-sm text-[#77716d]">{new Date(order.created_at).toLocaleDateString()}</td>
-                              <td className="px-5 py-4 text-sm font-bold text-[#c94708]">Fr {Number(order.total_amount).toLocaleString()}</td>
+                              <td className="px-5 py-4 text-sm font-bold text-[#c94708]">Fr {Number(order.total).toLocaleString()}</td>
                               <td className="px-5 py-4">
                                 <span className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${STATUS_STYLE[sk] ?? "bg-gray-50 text-gray-600 border-gray-200"}`}>
                                   {order.status}
