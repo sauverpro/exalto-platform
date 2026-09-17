@@ -8,6 +8,8 @@ use App\Http\Controllers\api\category\CategoryController;
 use App\Http\Controllers\api\order\OrderController;
 use App\Http\Controllers\api\orderitem\OrderItemController;  
 use App\Http\Controllers\api\payment\PaymentController;
+use App\Http\Controllers\api\inventrory\InventoryController;
+use App\Http\Controllers\api\inventrorytransaction\InventoryTransactionController;
 
 // Authentication routes
 Route::post('/auth/register', [AuthController::class, 'Register']);
@@ -59,6 +61,16 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/products/all', [ProductController::class, 'GetAllProducts']);
     Route::get('/payments/admin', [PaymentController::class, 'adminIndex']);
     Route::put('/payment/admin/update/{id}', [PaymentController::class, 'adminUpdate']);
+
+    Route::get('/inventories', [InventoryController::class, 'index']);
+    Route::get('/inventory/{id}', [InventoryController::class, 'show']);
+    Route::post('/inventory/store', [InventoryController::class, 'store']);
+    Route::put('/inventory/update/{id}', [InventoryController::class, 'update']);
+    Route::delete('/inventory/delete/{id}', [InventoryController::class, 'destroy']);
+
+    Route::get('/inventory-transactions', [InventoryTransactionController::class, 'index']);
+    Route::get('/inventory-transaction/{id}', [InventoryTransactionController::class, 'show']);
+    Route::post('/inventory-transaction/store', [InventoryTransactionController::class, 'store']);
 
     // Sales manager protected routes
     Route::put('/product/update/{id}', [ProductController::class, 'UpdateProduct']);
