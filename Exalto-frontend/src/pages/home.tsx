@@ -1,14 +1,9 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { ChevronRight, Leaf, Shield, Truck, Star, ArrowRight } from "lucide-react";
-import { products } from "../data/product";
+import { fetchStoreProducts } from "../api/products";
+import type { Product } from "../data/product";
 import ProductCard from "../components/productcard";
-
-const CATEGORIES = [
-  { name: "Fresh Juices", count: 4, color: "bg-amber-50 border-amber-200", img: "https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&w=400&q=80" },
-  { name: "Natural Wines", count: 3, color: "bg-rose-50 border-rose-200", img: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=400&q=80" },
-  { name: "Wholesale", count: 10, color: "bg-green-50 border-green-200", img: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=400&q=80" },
-  { name: "Export Produce", count: 6, color: "bg-orange-50 border-orange-200", img: "https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=400&q=80" },
-];
 
 const FEATURES = [
   { icon: Leaf, title: "100% Natural", desc: "No artificial additives. Pure ingredients from Rwanda's finest farms." },
@@ -24,6 +19,14 @@ const TESTIMONIALS = [
 ];
 
 function HomePage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [productsError, setProductsError] = useState("");
+
+  useEffect(() => {
+    fetchStoreProducts().then(setProducts).catch(() => setProductsError("Products could not be loaded."));
+  }, []);
+
+  const categories = Array.from(new Set(products.map((product) => product.category)));
   return (
     <div className="min-h-screen bg-white text-[#2a1f1a]">
 
@@ -93,21 +96,25 @@ function HomePage() {
             </Link>
           </div>
           <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
-            {CATEGORIES.map(({ name, count, color, img }) => (
+            {categories.map((name, index) => {
+              const categoryProducts = products.filter((product) => product.category === name);
+              const image = categoryProducts[0]?.image;
+              return (
               <Link
                 key={name}
                 to="/shop"
                 className={`group overflow-hidden rounded-2xl border ${color} bg-white transition hover:shadow-[0_12px_40px_rgba(201,71,8,0.12)]`}
               >
                 <div className="h-44 overflow-hidden sm:h-52">
-                  <img src={img} alt={name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                  <img src={image} alt={name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
                 </div>
                 <div className="p-4">
                   <h3 className="font-bold text-[#251c18]">{name}</h3>
-                  <p className="mt-0.5 text-xs text-[#77716d]">{count} products</p>
+                  <p className="mt-0.5 text-xs text-[#77716d]">{categoryProducts.length} products</p>
                 </div>
               </Link>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -142,6 +149,7 @@ function HomePage() {
             </Link>
           </div>
           <div className="grid gap-4 border border-[#eee8e2] bg-white sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {productsError && <p className="py-10 text-center text-sm text-red-600">{productsError}</p>}
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

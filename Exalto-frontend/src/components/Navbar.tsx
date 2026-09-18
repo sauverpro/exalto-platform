@@ -14,6 +14,13 @@ function Navbar() {
   const { user, isLoggedIn, logout } = useUser()
   const navigate = useNavigate()
   const { pathname } = useLocation()
+  const dashboardPath =
+  user?.role === "admin"
+    ? "/admin-dashboard"
+    : user?.role === "sales_manager"
+      ? "/sales-manager-dashboard"
+      : "/customer-dashboard";
+  
 
   useEffect(() => { setMobileMenuOpen(false); setUserMenuOpen(false) }, [pathname])
 
@@ -89,7 +96,7 @@ function Navbar() {
                 <div className="absolute right-0 top-11 z-50 w-48 rounded-xl border border-[#eadfce] bg-white shadow-lg py-2">
                   <p className="px-4 py-2 text-xs font-semibold text-[#251c18] truncate">{user?.full_name}</p>
                   <p className="px-4 pb-2 text-[10px] text-[#9a8a82] truncate border-b border-[#eadfce]">{user?.email}</p>
-                  <Link to="/customer-dashboard" className="flex items-center gap-2 px-4 py-2.5 text-sm text-[#251c18] hover:bg-[#f3efe9]">
+                  <Link  to={dashboardPath} className="flex items-center gap-2 px-4 py-2.5 text-sm text-[#251c18] hover:bg-[#f3efe9]">
                     <LayoutDashboard size={14} /> My Dashboard
                   </Link>
                   <button onClick={() => { logout(); setUserMenuOpen(false); navigate('/'); }} className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50">

@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAdmin } from "../context/AdminContext";
+import { loginUser } from "../api/auth";
+import { useUser } from "../context/UserContext";
 import { Lock, Mail, Eye, EyeOff, ShieldCheck } from "lucide-react";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
-  const { loginAdmin } = useAdmin();
+  const { login } = useUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -16,13 +17,19 @@ export default function AdminLogin() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 600));
-    if (loginAdmin(email, password)) {
-      navigate("/admin-dashboard");
-    } else {
-      setError("Invalid admin credentials. Please try again.");
+    try {
+      const response = await loginUser({ email, password });
+      if (response.data.role !== "admin" && response.data.role !== "sales_manager") {
+        setError("This account does not have dashboard access.");
+      } else {
+        login(response.data, response.token);
+        navigate("/admin-dashboard");
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.error || err.response?.data?.message || "Invalid credentials. Please try again.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -139,16 +146,6 @@ export default function AdminLogin() {
               )}
             </button>
           </form>
-
-          <div className="mt-8 rounded-xl border border-[#2a1f1a] bg-[#1a1008] p-4">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#4a3d38]">Demo Credentials</p>
-            <p className="text-xs text-[#6b5e58]">
-              Email: <span className="font-mono text-[#c94708]">admin@exalto.com</span>
-            </p>
-            <p className="mt-1 text-xs text-[#6b5e58]">
-              Password: <span className="font-mono text-[#c94708]">Admin123!</span>
-            </p>
-          </div>
 
           <p className="mt-6 text-center text-xs text-[#3d3028]">
             © {new Date().getFullYear()} Exalto Ltd. All rights reserved.

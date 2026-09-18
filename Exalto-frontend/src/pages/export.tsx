@@ -24,23 +24,11 @@ const DESTINATIONS = ["Kenya", "Uganda", "Tanzania", "DRC", "Burundi", "South Af
 export default function ExportPage() {
   const [form, setForm] = useState({ company: "", name: "", email: "", phone: "", country: "", products: "", quantity: "", delivery: "", notes: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const savedQuotations = localStorage.getItem("exalto-admin-quotations");
-    const quotations = savedQuotations ? JSON.parse(savedQuotations) : [];
-    quotations.push({
-      id: `QUO-${new Date().getFullYear()}-${Date.now().toString().slice(-5)}`,
-      company: form.company,
-      country: form.country,
-      products: form.products,
-      quantity: form.quantity || "Not specified",
-      schedule: form.delivery || "Not specified",
-      status: "New",
-      date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-    });
-    localStorage.setItem("exalto-admin-quotations", JSON.stringify(quotations));
-    setSubmitted(true);
+    setError("Quotation requests are not available because the backend does not currently provide a quotation endpoint.");
   };
 
   return (
@@ -159,6 +147,7 @@ export default function ExportPage() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="rounded-2xl border border-[#eadfce] bg-[#fffdf8] p-8 sm:p-10">
+              {error && <p className="mb-5 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">{error}</p>}
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#3d291c]">Company Name *</label>

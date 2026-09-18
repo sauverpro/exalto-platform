@@ -5,7 +5,7 @@ import {
   Bell, ChevronRight, Edit2, Trash2, Sun, Moon, FileText, Globe2, Search, Image, LayoutTemplate, Save, Upload, Trash,
 } from "lucide-react";
 import { useUser } from "../context/UserContext";
-import { fetchAdminCustomers, fetchAdminPayments, fetchAdminProducts, updateOrderStatus as updateOrderStatusApi, updateProduct, deleteProduct as deleteProductApi, type AdminCustomer as AdminCustomerRecord, type AdminPayment } from "../api/admin";
+import { createProduct, fetchAdminCustomers, fetchAdminPayments, fetchAdminProducts, fetchCategories, updateOrderStatus as updateOrderStatusApi, updateProduct, deleteProduct as deleteProductApi, type AdminCategory, type AdminCustomer as AdminCustomerRecord, type AdminPayment } from "../api/admin";
 import type { Product } from "../data/product";
 
 const NAV_ITEMS = [
@@ -114,17 +114,21 @@ function mergeCustomers(customersData: AdminCustomerRecord[], payments: AdminPay
 export default function AdminDashboard() {
   const { user, token, logout: logoutAdmin } = useUser();
   const isAdminLoggedIn = !!user && (user.role === "admin" || user.role === "sales_manager");
+  const isAdmin = user?.role === "admin";
+  const dashboardNav = NAV_ITEMS.filter(({ id }) => isAdmin || ["overview", "products", "orders", "customers", "analytics"].includes(id));
   const adminEmail = user?.email ?? null;
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [lightMode, setLightMode] = useState(false);
   const [adminProducts, setAdminProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<AdminCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [apiError, setApiError] = useState("");
   const [productSearch, setProductSearch] = useState("");
   const [productModalOpen, setProductModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [productImageFile, setProductImageFile] = useState<File | undefined>();
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [orderSearch, setOrderSearch] = useState("");
   const [customers, setCustomers] = useState<AdminCustomer[]>([]);
@@ -219,21 +223,26 @@ export default function AdminDashboard() {
   });
   const [productForm, setProductForm] = useState({
     name: "",
-    category: "Juice",
+    category: "",
     price: "",
     stock: "",
     description: "",
-    image: "",
+    packaging: "",
+    origin: "Rwanda",
+    unit: "",
+    quality: "Grade A",
+    imageUrl: "",
   });
 
   useEffect(() => {
     if (!token || !isAdminLoggedIn) return;
     setLoading(true);
-    Promise.all([fetchAdminProducts(token), fetchAdminPayments(token), fetchAdminCustomers(token)])
-      .then(([productData, paymentData, customerData]) => {
+    Promise.all([fetchAdminProducts(token), fetchAdminPayments(token), fetchAdminCustomers(token), fetchCategories()])
+      .then(([productData, paymentData, customerData, categoryData]) => {
         setAdminProducts(productData);
         setOrders(paymentsToOrders(paymentData));
         setCustomers(mergeCustomers(customerData, paymentData));
+        setCategories(categoryData);
       })
       .catch(() => setApiError("Could not load dashboard data from the backend."))
       .finally(() => setLoading(false));
@@ -263,6 +272,7 @@ export default function AdminDashboard() {
 
   const openProductForm = (product?: Product) => {
     setEditingProduct(product ?? null);
+    setProductImageFile(undefined);
     setProductForm(product
       ? {
           name: product.name,
@@ -270,15 +280,23 @@ export default function AdminDashboard() {
           price: String(product.price),
           stock: String(product.stock),
           description: product.description,
-          image: product.image,
+          packaging: product.packaging,
+          origin: product.origin,
+          unit: product.unit,
+          quality: product.grade,
+          imageUrl: product.image,
         }
       : {
           name: "",
-          category: "Juice",
+          category: categories[0] ? String(categories[0].id) : "",
           price: "",
           stock: "",
           description: "",
-          image: "",
+          packaging: "",
+          origin: "Rwanda",
+          unit: "",
+          quality: "Grade A",
+          imageUrl: "",
         });
     setProductModalOpen(true);
   };
@@ -287,15 +305,36 @@ export default function AdminDashboard() {
     event.preventDefault();
     const price = Number(productForm.price);
     const stock = Number(productForm.stock);
-    if (!productForm.name.trim() || !price || stock < 0) return;
+    if (!productForm.name.trim() || !productForm.category || !price || stock < 0 || !productForm.packaging.trim() || !productForm.origin.trim() || !productForm.unit.trim() || !productForm.quality.trim()) {
+      setApiError("Complete all product fields and select a valid category.");
+      return;
+    }
 
-    if (!token || !editingProduct) return;
+    if (!token || (!editingProduct && !productImageFile && !productForm.imageUrl.trim())) {
+      setApiError("Choose an image file or enter an image URL.");
+      return;
+    }
     try {
-      const updated = await updateProduct(token, editingProduct.id, { name: productForm.name.trim(), price, description: productForm.description, category_id: Number(editingProduct.category), stock_quantity: stock, packaging_type: editingProduct.packaging, country_of_origin: editingProduct.origin, unit: editingProduct.unit, quality_type: editingProduct.grade });
-      setAdminProducts((current) => current.map((product) => product.id === updated.id ? updated : product));
+      let image = productImageFile;
+      const imageUrlChanged = productForm.imageUrl.trim() && (!editingProduct || productForm.imageUrl.trim() !== editingProduct.image);
+      if (!image && imageUrlChanged) {
+        const response = await fetch(productForm.imageUrl.trim());
+        if (!response.ok) throw new Error("The image URL could not be downloaded.");
+        const blob = await response.blob();
+        if (!blob.type.startsWith("image/")) throw new Error("The URL does not point to an image.");
+        const extension = blob.type.split("/")[1] || "jpg";
+        image = new File([blob], `product-image.${extension}`, { type: blob.type });
+      }
+      const data = { name: productForm.name.trim(), price, description: productForm.description, category_id: Number(productForm.category), stock_quantity: stock, packaging_type: productForm.packaging.trim(), country_of_origin: productForm.origin.trim(), unit: productForm.unit.trim(), quality_type: productForm.quality.trim(), image };
+      const saved = editingProduct
+        ? await updateProduct(token, editingProduct.id, data)
+        : await createProduct(token, data);
+      setAdminProducts((current) => editingProduct ? current.map((product) => product.id === saved.id ? saved : product) : [saved, ...current]);
       setProductModalOpen(false);
-    } catch {
-      setApiError("Could not save the product.");
+    } catch (error: any) {
+      const validationErrors = error.response?.data?.errors;
+      const validationMessage = validationErrors ? Object.values(validationErrors).flat().join(" ") : "";
+      setApiError(validationMessage || error.message || error.response?.data?.message || "Could not save the product.");
     }
   };
 
@@ -393,7 +432,7 @@ export default function AdminDashboard() {
 
         {/* Nav */}
         <nav className="flex-1 space-y-1 px-3 py-6">
-          {NAV_ITEMS.map(({ icon: Icon, label, id }) => (
+          {dashboardNav.map(({ icon: Icon, label, id }) => (
             <button
               key={id}
               onClick={() => setActiveTab(id)}
@@ -419,7 +458,7 @@ export default function AdminDashboard() {
               </div>
               <div className="min-w-0">
                 <p className="truncate text-xs font-semibold text-white">{adminEmail}</p>
-                <p className="text-[10px] text-[#4a3d38]">Administrator</p>
+                <p className="text-[10px] text-[#4a3d38]">{isAdmin ? "Administrator" : "Sales Manager"}</p>
               </div>
             </div>
           )}
@@ -528,9 +567,9 @@ export default function AdminDashboard() {
             <div className="rounded-2xl border border-[#1e1410] bg-[#0f0a08] overflow-hidden">
               <div className="flex items-center justify-between border-b border-[#1e1410] px-6 py-5">
                 <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-white">All Products</h3>
-                <button onClick={() => openProductForm()} className="flex items-center gap-2 rounded-xl bg-[#c94708] px-4 py-2 text-xs font-bold text-white hover:bg-[#a83906] transition shadow-[0_4px_15px_rgba(201,71,8,0.3)]">
+                {isAdmin && <button onClick={() => openProductForm()} className="flex items-center gap-2 rounded-xl bg-[#c94708] px-4 py-2 text-xs font-bold text-white hover:bg-[#a83906] transition shadow-[0_4px_15px_rgba(201,71,8,0.3)]">
                   + Add Product
-                </button>
+                </button>}
               </div>
               <div className="border-b border-[#1e1410] px-6 py-4">
                 <input
@@ -574,9 +613,9 @@ export default function AdminDashboard() {
                             <button onClick={() => openProductForm(p)} aria-label={`Edit ${p.name}`} className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#1e1410] text-[#6b5e58] hover:border-[#c94708] hover:text-[#c94708] transition">
                               <Edit2 size={13} />
                             </button>
-                            <button onClick={() => deleteProduct(p.id)} aria-label={`Delete ${p.name}`} className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#1e1410] text-[#6b5e58] hover:border-red-800 hover:text-red-400 transition">
+                            {isAdmin && <button onClick={() => deleteProduct(p.id)} aria-label={`Delete ${p.name}`} className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#1e1410] text-[#6b5e58] hover:border-red-800 hover:text-red-400 transition">
                               <Trash2 size={13} />
-                            </button>
+                            </button>}
                           </div>
                         </td>
                       </tr>
@@ -1005,11 +1044,9 @@ export default function AdminDashboard() {
                 <input required value={productForm.name} onChange={(event) => setProductForm({ ...productForm, name: event.target.value })} className="mt-2 w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" />
               </label>
               <label className="text-xs font-semibold text-[#6b5e58]">Category
-                <select value={productForm.category} onChange={(event) => setProductForm({ ...productForm, category: event.target.value })} className="mt-2 w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]">
-                  <option>Juice</option>
-                  <option>Natural Wine</option>
-                  <option>Gift Sets</option>
-                  <option>Export Produce</option>
+                <select required value={productForm.category} onChange={(event) => setProductForm({ ...productForm, category: event.target.value })} className="mt-2 w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]">
+                  <option value="">Select a category</option>
+                  {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
                 </select>
               </label>
               <label className="text-xs font-semibold text-[#6b5e58]">Price
@@ -1018,8 +1055,24 @@ export default function AdminDashboard() {
               <label className="text-xs font-semibold text-[#6b5e58]">Stock quantity
                 <input required min="0" type="number" value={productForm.stock} onChange={(event) => setProductForm({ ...productForm, stock: event.target.value })} className="mt-2 w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" />
               </label>
-              <label className="text-xs font-semibold text-[#6b5e58] sm:col-span-2">Image URL
-                <input value={productForm.image} onChange={(event) => setProductForm({ ...productForm, image: event.target.value })} className="mt-2 w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" />
+              <label className="text-xs font-semibold text-[#6b5e58] sm:col-span-2">Product image {editingProduct ? "(optional)" : ""}
+                <input type="file" accept="image/jpeg,image/png,image/jpg,image/gif" onChange={(event) => setProductImageFile(event.target.files?.[0])} className="mt-2 block w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white file:mr-4 file:rounded-lg file:border-0 file:bg-[#c94708] file:px-3 file:py-2 file:text-xs file:font-bold file:text-white" />
+              </label>
+              <label className="text-xs font-semibold text-[#6b5e58] sm:col-span-2">Image URL (optional)
+                <input type="url" value={productForm.imageUrl} onChange={(event) => setProductForm({ ...productForm, imageUrl: event.target.value })} placeholder="https://example.com/product.jpg" className="mt-2 w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white placeholder-[#4a3d38] outline-none focus:border-[#c94708]" />
+                <span className="mt-1 block text-[11px] font-normal text-[#4a3d38]">Use a file or URL. A new product needs one of them.</span>
+              </label>
+              <label className="text-xs font-semibold text-[#6b5e58]">Packaging type
+                <input required value={productForm.packaging} onChange={(event) => setProductForm({ ...productForm, packaging: event.target.value })} placeholder="e.g. 12 bottles per carton" className="mt-2 w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" />
+              </label>
+              <label className="text-xs font-semibold text-[#6b5e58]">Unit
+                <input required value={productForm.unit} onChange={(event) => setProductForm({ ...productForm, unit: event.target.value })} placeholder="e.g. 500ml bottle" className="mt-2 w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" />
+              </label>
+              <label className="text-xs font-semibold text-[#6b5e58]">Country of origin
+                <input required value={productForm.origin} onChange={(event) => setProductForm({ ...productForm, origin: event.target.value })} className="mt-2 w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" />
+              </label>
+              <label className="text-xs font-semibold text-[#6b5e58]">Quality type
+                <input required value={productForm.quality} onChange={(event) => setProductForm({ ...productForm, quality: event.target.value })} placeholder="e.g. Grade A" className="mt-2 w-full rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" />
               </label>
               <label className="text-xs font-semibold text-[#6b5e58] sm:col-span-2">Description
                 <textarea rows={4} value={productForm.description} onChange={(event) => setProductForm({ ...productForm, description: event.target.value })} className="mt-2 w-full resize-y rounded-xl border border-[#1e1410] bg-[#1a1008] px-4 py-3 text-sm text-white outline-none focus:border-[#c94708]" />

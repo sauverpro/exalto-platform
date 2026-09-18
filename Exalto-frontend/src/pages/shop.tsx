@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown, Grid2X2, List, Search, SlidersHorizontal, X } from "lucide-react";
 import ProductCard from "../components/productcard";
-import { products, categories } from "../data/product";
+import { fetchStoreProducts } from "../api/products";
+import type { Product } from "../data/product";
 
 const GRADES = ["All Grades", "Grade A", "Export Grade"];
 const SORT_OPTIONS = [
@@ -13,6 +14,9 @@ const SORT_OPTIONS = [
 ];
 
 export default function Shop() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All");
   const [grade, setGrade] = useState("All Grades");
@@ -22,6 +26,12 @@ export default function Shop() {
   const [sortOrder, setSortOrder] = useState("latest");
   const [view, setView] = useState<"grid" | "list">("grid");
   const [filtersOpen, setFiltersOpen] = useState(false);
+
+  useEffect(() => {
+    fetchStoreProducts().then(setProducts).catch(() => setLoadError("Products could not be loaded.")).finally(() => setLoading(false));
+  }, []);
+
+  const categories = ["All", ...Array.from(new Set(products.map((product) => product.category)))];
 
   const filtered = products
     .filter((p) =>
@@ -60,7 +70,7 @@ export default function Shop() {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h1 className="text-2xl font-black text-[#251c18] sm:text-3xl">Our Products</h1>
-              <p className="mt-1 text-sm text-[#77716d]">{products.length} products available</p>
+                <p className="mt-1 text-sm text-[#77716d]">{products.length} products available</p>
             </div>
             <label className="flex w-full max-w-md items-center gap-3 border border-[#ded5cd] bg-[#fffdf8] px-4 py-3 focus-within:border-[#c94708] focus-within:ring-1 focus-within:ring-[#c94708]/20 transition">
               <Search size={18} className="flex-shrink-0 text-[#b9aaa1]" />
@@ -201,7 +211,10 @@ export default function Shop() {
             )}
 
             {/* Grid / List */}
-            {filtered.length === 0 ? (
+            {loading && <p className="py-16 text-center text-sm text-[#77716d]">Loading products...</p>}
+            {loadError && <p className="py-16 text-center text-sm text-red-600">{loadError}</p>}
+            {!loading && !loadError && (
+              filtered.length === 0 ? (
               <div className="rounded-2xl border border-[#eee8e2] bg-white py-20 text-center">
                 <p className="text-lg font-bold text-[#251c18]">No products found</p>
                 <p className="mt-2 text-sm text-[#77716d]">Try adjusting your filters.</p>
@@ -228,6 +241,7 @@ export default function Shop() {
                   </Link>
                 ))}
               </div>
+              )
             )}
           </section>
         </div>

@@ -4,7 +4,6 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { CartProvider } from "./context/CartContext";
 import { FavoritesProvider } from "./context/FavoritesContext";
-import { AdminProvider } from "./context/AdminContext";
 import { UserProvider } from "./context/UserContext";
 
 import Home from "./pages/home";
@@ -26,6 +25,7 @@ import ProductDetailPage from "./pages/product-detail";
 import PrivacyPolicyPage from "./pages/privacy-policy";
 import TermsPage from "./pages/terms";
 import FAQsPage from "./pages/faqs";
+import SalesManagerDashboard from "./pages/sales manager-dashboard";
 
 const NO_LAYOUT_PATHS = ["/admin-login", "/admin-dashboard", "/customer-dashboard", "/login", "/register", "/forgot-password"];
 
@@ -52,6 +52,7 @@ function Layout() {
         <Route path="/customer-dashboard" element={<CustomerDashboard />} />
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/sales-manager-dashboard" element={<SalesManagerDashboard />} />
         <Route path="/product/:id" element={<ProductDetailPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/terms" element={<TermsPage />} />
@@ -66,13 +67,11 @@ function App() {
   return (
     <BrowserRouter>
       <UserProvider>
-        <AdminProvider>
-          <CartProvider>
-            <FavoritesProvider>
-              <Layout />
-            </FavoritesProvider>
-          </CartProvider>
-        </AdminProvider>
+        <CartProvider>
+          <FavoritesProvider>
+            <Layout />
+          </FavoritesProvider>
+        </CartProvider>
       </UserProvider>
     </BrowserRouter>
   );

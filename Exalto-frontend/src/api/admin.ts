@@ -8,6 +8,17 @@ const authConfig = (token: string) => ({
   headers: { Authorization: `Bearer ${token}` },
 });
 
+export interface AdminCategory {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+export const fetchCategories = async (): Promise<AdminCategory[]> => {
+  const response = await axios.get<{ data: AdminCategory[] }>(`${API_URL}/category/all`);
+  return response.data.data ?? [];
+};
+
 export interface AdminPayment {
   id: number;
   amount: string | number;
@@ -71,6 +82,32 @@ export const fetchAdminProducts = async (token: string): Promise<Product[]> => {
   return (response.data.data ?? []).map(toAdminProduct);
 };
 
+export interface ProductWriteData {
+  name: string;
+  price: number;
+  description: string;
+  category_id: number;
+  stock_quantity: number;
+  packaging_type: string;
+  country_of_origin: string;
+  unit: string;
+  quality_type: string;
+  image?: File;
+}
+
+function productFormData(data: ProductWriteData): FormData {
+  const formData = new FormData();
+  Object.entries(data).forEach(([key, value]) => {
+    if (value !== undefined) formData.append(key, value instanceof File ? value : String(value));
+  });
+  return formData;
+}
+
+export const createProduct = async (token: string, data: ProductWriteData): Promise<Product> => {
+  const response = await axios.post<{ data: ApiProduct }>(`${API_URL}/product/store`, productFormData(data), authConfig(token));
+  return toAdminProduct(response.data.data);
+};
+
 export const fetchAdminPayments = async (token: string): Promise<AdminPayment[]> => {
   const response = await axios.get<{ data: AdminPayment[] }>(`${API_URL}/payments/admin`, authConfig(token));
   return response.data.data ?? [];
@@ -79,9 +116,12 @@ export const fetchAdminPayments = async (token: string): Promise<AdminPayment[]>
 export const updateProduct = async (
   token: string,
   id: number,
-  data: { name: string; price: number; description: string; category_id: number; stock_quantity: number; packaging_type: string; country_of_origin: string; unit: string; quality_type: string },
+  data: ProductWriteData,
 ): Promise<Product> => {
-  const response = await axios.put<{ data: ApiProduct }>(`${API_URL}/product/update/${id}`, data, authConfig(token));
+  const formData = productFormData(data);
+  formData.append("county_of_origin", data.country_of_origin);
+  formData.append("_method", "PUT");
+  const response = await axios.post<{ data: ApiProduct }>(`${API_URL}/product/update/${id}`, formData, authConfig(token));
   return toAdminProduct(response.data.data);
 };
 

@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { ShoppingCart, Heart, ChevronRight, Star, Package, Globe, Award, Minus, Plus, ArrowLeft } from "lucide-react";
-import { products } from "../data/product";
+import { fetchStoreProducts } from "../api/products";
+import type { Product } from "../data/product";
 import { useCart } from "../context/CartContext";
 import { useFavorites } from "../context/FavoritesContext";
 import ProductCard from "../components/productcard";
@@ -11,6 +12,12 @@ type Tab = "description" | "details" | "shipping";
 export default function ProductDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+  useEffect(() => {
+    fetchStoreProducts().then(setProducts).catch(() => setLoadError("Product could not be loaded.")).finally(() => setLoading(false));
+  }, []);
   const product = products.find((p) => p.id === Number(id));
   const { addToCart } = useCart();
   const { toggleFavorite, isFavorite } = useFavorites();
@@ -19,7 +26,8 @@ export default function ProductDetailPage() {
   const [tab, setTab] = useState<Tab>("description");
   const [added, setAdded] = useState(false);
 
-  if (!product) {
+  if (loading) return <main className="flex min-h-screen items-center justify-center bg-[#fffdf8] pt-24 text-sm text-[#77716d]">Loading product...</main>;
+  if (loadError || !product) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#fffdf8] pt-24">
         <div className="text-center">

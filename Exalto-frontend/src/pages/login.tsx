@@ -32,10 +32,12 @@ const Login = () => {
      // let's get user data from api end point
        
 
-      const dashboardRedirect =
-        data.data.role === "admin" || data.data.role === "sales_manager"
-          ? "/admin-dashboard"
-          : "/shop";
+     const dashboardRedirect =
+  data.data.role === "admin"
+    ? "/admin-dashboard"
+    : data.data.role === "sales_manager"
+      ? "/sales-manager-dashboard"
+      : "/shop";
 
       navigate(from || dashboardRedirect, { replace: true });
       
