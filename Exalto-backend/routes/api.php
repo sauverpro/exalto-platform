@@ -51,6 +51,7 @@ Route::middleware('auth:api')->group(function () {
 
 
     // Admin protected routes
+    Route::get('/admin/customers', [AuthController::class, 'getCustomers']);
     Route::post('/admin/create-sales-manager', [AuthController::class, 'createStaffUser']);
     Route::post('/category/store', [CategoryController::class, 'StoreCategory']);
     Route::delete('/category/delete/{id}', [CategoryController::class, 'DeleteCategory']);
