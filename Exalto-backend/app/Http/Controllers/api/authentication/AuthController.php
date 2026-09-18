@@ -6,12 +6,28 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends Controller
 {
+    public function getCustomers()
+    {
+        $user = Auth::user();
+        if (!$user || (!$user->isAdmin() && !$user->isSalesManager())) {
+            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        return response()->json([
+            'status' => true,
+            'data' => User::where('role', User::ROLE_CLIENT)
+                ->orderBy('created_at', 'desc')
+                ->get(['id', 'full_name', 'email', 'phone_number', 'role', 'created_at']),
+        ]);
+    }
+
     public function Register(Request $request) {
         // validating inputs
         $validation = Validator::make($request->all(),[
@@ -19,6 +35,8 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'phone_number' => 'required|numeric|min:10|unique:users',
+            'role' => 'required|string|in:client,sales_manager',
+            'company_name' => 'nullable|string|max:255',
         ]);
 
         if($validation->fails()) {
@@ -32,7 +50,8 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'phone_number' => $request->phone_number,
-            'role' => User::ROLE_CLIENT,
+            'role' => $request->role, 
+            'company_name' => $request->company_name,
         ]);
 
         return response()->json([
