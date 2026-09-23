@@ -77,4 +77,11 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/products/manage', [ProductController::class, 'GetAllProducts']);
     Route::put('/order/status/{id}', [OrderController::class, 'updateStatus']);
     Route::put('/payment/admin/update/{id}', [PaymentController::class, 'adminUpdate']);
+    
+   // cms routes
+   //setting routes
+     Route::get('/settings', [\App\Http\Controllers\api\cms\SettingController::class, 'index']);
+     Route::post('/settings/store', [\App\Http\Controllers\api\cms\SettingController::class, 'store']);
+     Route::put('/settings/update/{id}', [\App\Http\Controllers\api\cms\SettingController::class, 'update']);
+     Route::delete('/settings/delete/{id}', [\App\Http\Controllers\api\cms\SettingController::class, 'destroy']); 
 });
