@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\api\cms;
 
 use App\Http\Controllers\Controller;
-use App\Models\cms\NavLink;
+use App\Models\cms\Page;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class NavLinkController extends Controller
+class PageController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,18 +16,27 @@ class NavLinkController extends Controller
     public function index()
     {
         //
-        $navs = NavLink::all();
+        $navs = Page::all();
         return response()->json(['status'=>true,'data'=>$navs],200);
     }
+    public function byslug($slug){
 
+        $page = Page::with('sections')->where('slug', $slug)->first();
+        if (!$page) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Page not found.',
+            ], 404);
+        }
+
+        return response()->json(['status'=>true,'data'=>$page],200);
+    }
     /**
      * Show the form for creating a new resource.
      */
     public function create()
-        {
+    {
         //
-       
-        
     }
 
     /**
@@ -46,21 +55,22 @@ class NavLinkController extends Controller
         // create link
 
         $validation = Validator::make($request->all(),[
-            'link_name'=>'required|string',
-            'link'=>'required'
+            'name'=>'required|string',
+            'slug'=>'required'
         ]);
         if($validation->fails()){
             return response()->json(['status'=>false,
             'errors' => $validation->errors(),],400);
         }
-        $data =$request->all();
-        $created = NavLink::create($data);
-        if($created){
+        $data = $request->all();
+        $created = Page::create($data);
+         if($created){
             return response()->json(['status'=>true, 'message'=>'created successfully','data'=>$created],200);
         }
         else{
             return response()->json(['status'=>false,'message'=>'something went wrong'],500);
         }
+
     }
 
     /**
@@ -77,7 +87,6 @@ class NavLinkController extends Controller
     public function edit(string $id)
     {
         //
-        
     }
 
     /**
@@ -86,14 +95,14 @@ class NavLinkController extends Controller
     public function update(Request $request, string $id)
     {
         //
-         $user = Auth::user();
+          $user = Auth::user();
         if($user->role !== 'admin'){
             return response()->json([
                 'status' => false,
                 'message' => 'Unauthorized',
             ], 403);
         }
-        $nav = NavLink::find($id);
+        $nav = Page::find($id);
         if (!$nav) {
             # code...
             return response()->json(['status'=>false, 'message'=>'Not found'],404);
@@ -107,6 +116,7 @@ class NavLinkController extends Controller
         else{
             return response()->json(['status'=>false,'message'=>'not updated!'],500);
         }
+    
     }
 
     /**
@@ -122,7 +132,7 @@ class NavLinkController extends Controller
                 'message' => 'Unauthorized',
             ], 403);
         }
-        $nav = NavLink::find($id);
+        $nav = Page::find($id);
         if (!$nav) {
             # code...
             return response()->json(['status'=>false, 'message'=>'Not found'],404);
@@ -133,5 +143,6 @@ class NavLinkController extends Controller
         else{
             return response()->json(['status'=>false,'message'=>'something went wrong'],500);
         }
+    
     }
 }

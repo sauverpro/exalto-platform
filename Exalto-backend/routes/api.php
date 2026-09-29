@@ -33,6 +33,11 @@ Route::post('/orderitem/store', [OrderItemController::class, 'store']);
 Route::get('/orderitem/{id}', [OrderItemController::class, 'show']);
 Route::put('/orderitem/update/{id}', [OrderItemController::class, 'update']);
 Route::delete('/orderitem/delete/{id}', [OrderItemController::class, 'destroy']);
+Route::get('/navigation_link',[\App\Http\Controllers\api\cms\NavLinkController::class,'index']);
+Route::get('/settings', [\App\Http\Controllers\api\cms\SettingController::class, 'index']);
+Route::get('/pages/{slug}',[\App\Http\Controllers\api\cms\PageController::class,'byslug']);
+
+
 
 Route::middleware('auth:api')->group(function () {
     // Client protected routes
@@ -80,8 +85,24 @@ Route::middleware('auth:api')->group(function () {
     
    // cms routes
    //setting routes
-     Route::get('/settings', [\App\Http\Controllers\api\cms\SettingController::class, 'index']);
+     
      Route::post('/settings/store', [\App\Http\Controllers\api\cms\SettingController::class, 'store']);
      Route::put('/settings/update/{id}', [\App\Http\Controllers\api\cms\SettingController::class, 'update']);
-     Route::delete('/settings/delete/{id}', [\App\Http\Controllers\api\cms\SettingController::class, 'destroy']); 
+     Route::delete('/settings/delete/{id}', [\App\Http\Controllers\api\cms\SettingController::class, 'destroy']);
+      // navigation link routes
+      
+      Route::post('/navigation_link',[\App\Http\Controllers\api\cms\NavLinkController::class,'store']);
+      Route::put('/navigation_link/{id}',[\App\Http\Controllers\api\cms\NavLinkController::class,'update']);
+      Route::delete('/navigation_link/{id}',[\App\Http\Controllers\api\cms\NavLinkController::class,'destroy']);
+
+      // create and edit page
+      Route::get('/pages',[\App\Http\Controllers\api\cms\PageController::class,'index']);
+      Route::post('/pages',[\App\Http\Controllers\api\cms\PageController::class,'store']);
+      Route::put('/pages/{id}',[\App\Http\Controllers\api\cms\PageController::class,'update']);
+      Route::delete('/pages/{id}',[\App\Http\Controllers\api\cms\PageController::class,'destroy']);
+    // page section
+      //Route::get('/pages',[\App\Http\Controllers\api\cms\PageSectionController::class,'index']);
+      Route::post('/pages/section/{id}',[\App\Http\Controllers\api\cms\PageSectionController::class,'store']);
+      //Route::put('/pages/{id}',[\App\Http\Controllers\api\cms\PageSectionController::class,'update']);
+      //Route::delete('/pages/{id}',[\App\Http\Controllers\api\cms\PageSectionController::class,'destroy']);
 });
