@@ -2,6 +2,64 @@ import { Link } from "react-router-dom";
 import { ChevronRight, Leaf, Shield, Truck, Star, ArrowRight } from "lucide-react";
 import { products } from "../data/product";
 import ProductCard from "../components/productcard";
+import { useState,useEffect } from "react";
+
+
+// test cms part on hero section and wholesale banner
+type HeroContent = {
+  headingPrefix: string;
+  headingAccent: string;
+  headingSuffix: string;
+  description: string;
+  backgroundImage: string;
+  primaryButton: { text: string; url: string };
+  secondaryButton: { text: string; url: string };
+  stats: { value: string; label: string }[];
+};
+
+type WholesaleBannerContent = {
+  eyebrow: string;
+  titlePrefix: string;
+  titleAccent: string;
+  description: string;
+  backgroundImage: string;
+  primaryButton: { text: string; url: string };
+  secondaryButton: { text: string; url: string };
+};
+
+const DEFAULT_WHOLESALE_BANNER: WholesaleBannerContent = {
+  eyebrow: "For Business Buyers",
+  titlePrefix: "Wholesale &",
+  titleAccent: "Export Solutions",
+  description:
+    "We supply restaurants, hotels, supermarkets, and international distributors with premium Rwandan beverages. Competitive bulk pricing, flexible delivery schedules, and dedicated account management.",
+  backgroundImage:
+    "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=2000&q=85",
+  primaryButton: { text: "Open Wholesale Account", url: "/wholesale" },
+  secondaryButton: { text: "Export Enquiry", url: "/export" },
+};
+
+const DEFAULT_HERO: HeroContent = {
+  headingPrefix: "EXALTO",
+  headingAccent: "FRESH",
+  headingSuffix: "PRODUCE",
+  description:
+    "Premium natural beverages and fresh produce from Rwanda's finest farms. Supplying local businesses, wholesale buyers, and international export partners.",
+  backgroundImage:
+    "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=2200&q=85",
+  primaryButton: { text: "Shop Now", url: "/shop" },
+  secondaryButton: { text: "Wholesale Enquiry", url: "/wholesale" },
+  stats: [
+    { value: "500+", label: "Happy Clients" },
+    { value: "100%", label: "Natural" },
+    { value: "2+", label: "Products" },
+    { value: "Rwanda", label: "Origin" },
+  ],
+};
+
+
+
+
 
 const CATEGORIES = [
   { name: "Fresh Juices", count: 4, color: "bg-amber-50 border-amber-200", img: "https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&w=400&q=80" },
@@ -23,47 +81,123 @@ const TESTIMONIALS = [
   { name: "David N.", role: "Export Partner, Nairobi", text: "The sugarcane wine has been a hit in our market. Packaging is excellent and shipments always arrive on time.", rating: 5 },
 ];
 
+
 function HomePage() {
+  const [hero, setHero] = useState<HeroContent>(DEFAULT_HERO);
+  const [wholesaleBanner, setWholesaleBanner] =
+    useState<WholesaleBannerContent>(DEFAULT_WHOLESALE_BANNER);
+
+  useEffect(() => {
+    const apiUrl = (
+      import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api"
+    ).replace(/\/+$/, "");
+    const controller = new AbortController();
+
+    fetch(`${apiUrl}/pages/home`, { signal: controller.signal })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Page request failed: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((response) => {
+        const sections = response.data?.sections ?? [];
+
+        const heroContent = sections.find(
+          (section: { type?: string }) => section.type === "hero",
+        )?.content as Partial<HeroContent> | undefined;
+
+        if (heroContent) {
+          setHero({
+            ...DEFAULT_HERO,
+            ...heroContent,
+            primaryButton: {
+              ...DEFAULT_HERO.primaryButton,
+              ...heroContent.primaryButton,
+            },
+            secondaryButton: {
+              ...DEFAULT_HERO.secondaryButton,
+              ...heroContent.secondaryButton,
+            },
+            stats: Array.isArray(heroContent.stats)
+              ? heroContent.stats
+              : DEFAULT_HERO.stats,
+          });
+        }
+
+        const wholesaleContent = sections.find(
+          (section: { type?: string }) =>
+            section.type === "wholesale_banner",
+        )?.content as Partial<WholesaleBannerContent> | undefined;
+
+        if (wholesaleContent) {
+          setWholesaleBanner({
+            ...DEFAULT_WHOLESALE_BANNER,
+            ...wholesaleContent,
+            primaryButton: {
+              ...DEFAULT_WHOLESALE_BANNER.primaryButton,
+              ...wholesaleContent.primaryButton,
+            },
+            secondaryButton: {
+              ...DEFAULT_WHOLESALE_BANNER.secondaryButton,
+              ...wholesaleContent.secondaryButton,
+            },
+          });
+        }
+      })
+      .catch((error) => {
+        if (error.name !== "AbortError") {
+          console.error("Could not load CMS page sections:", error);
+        }
+      });
+
+    return () => controller.abort();
+  }, []);
+
+
+
+
   return (
     <div className="min-h-screen bg-white text-[#2a1f1a]">
 
       {/* Hero */}
+      
       <section
         className="relative flex min-h-screen items-center overflow-hidden"
         style={{
-          backgroundImage:
-            "linear-gradient(105deg, rgba(10,8,5,0.93) 0%, rgba(30,15,5,0.82) 55%, rgba(10,8,5,0.55) 100%), url('https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=2200&q=85')",
+          backgroundImage: `linear-gradient(105deg, rgba(10,8,5,0.93) 0%, rgba(30,15,5,0.82) 55%, rgba(10,8,5,0.55) 100%), url('${hero.backgroundImage}')`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
         <div className="relative z-10 mx-auto flex w-full max-w-[1400px] justify-center px-5 py-32 text-center sm:px-12 lg:px-16">
           <div className="flex max-w-none flex-col items-center">
-            
-            <h1 className="whitespace-nowrap text-4xl font-black leading-[1.0] tracking-tight !text-white sm:text-6xl lg:text-8xl">
-              EXALTO <span className="text-[#c94708]">FRESH</span> PRODUCE
+            <h1 className="text-4xl font-black leading-[1.0] tracking-tight text-white sm:text-6xl lg:text-8xl">
+              {hero.headingPrefix}{" "}
+              <span className="text-[#c94708]">{hero.headingAccent}</span>{" "}
+              {hero.headingSuffix}
             </h1>
             <p className="mt-6 max-w-3xl text-base leading-7 text-white/70 sm:text-lg">
-              Premium natural beverages and fresh produce from Rwanda's finest farms. Supplying local businesses, wholesale buyers, and international export partners.
+              {hero.description}
             </p>
             <div className="mt-10 flex flex-wrap justify-center gap-4">
               <Link
-                to="/shop"
+                to={hero.primaryButton.url}
                 className="inline-flex items-center gap-2 bg-[#c94708] px-8 py-4 text-sm font-bold text-white shadow-[0_8px_30px_rgba(201,71,8,0.4)] transition hover:bg-[#9f3506]"
               >
-                Shop Now <ChevronRight size={18} />
+                {hero.primaryButton.text} <ChevronRight size={18} />
               </Link>
               <Link
-                to="/wholesale"
+                to={hero.secondaryButton.url}
                 className="inline-flex items-center gap-2 border border-white/30 px-8 py-4 text-sm font-bold text-white transition hover:border-[#c94708] hover:text-[#c94708]"
               >
-                Wholesale Enquiry
+                {hero.secondaryButton.text}
               </Link>
             </div>
             <div className="mt-12 flex flex-wrap justify-center gap-8">
-              {[["500+", "Happy Clients"], ["100%", "Natural"], ["2+", "Products"], ["Rwanda", "Origin"]].map(([val, label]) => (
+              {hero.stats.map(({ value, label }) => (
                 <div key={label}>
-                  <p className="text-2xl font-black text-[#c94708]">{val}</p>
+                  <p className="text-2xl font-black text-[#c94708]">{value}</p>
                   <p className="text-xs font-medium text-white/50">{label}</p>
                 </div>
               ))}
@@ -71,6 +205,8 @@ function HomePage() {
           </div>
         </div>
       </section>
+
+
 
       {/* Announcement bar */}
       <div className="bg-[#c94708] px-5 py-3 text-center">
@@ -154,36 +290,51 @@ function HomePage() {
         </div>
       </section>
 
+  
+
       {/* Wholesale Banner */}
       <section
         className="relative overflow-hidden px-5 py-20 sm:px-8 sm:py-28"
         style={{
-          backgroundImage:
-            "linear-gradient(105deg, rgba(37,28,24,0.97) 0%, rgba(60,20,5,0.92) 60%, rgba(37,28,24,0.85) 100%), url('https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=2000&q=85')",
+          backgroundImage: `linear-gradient(105deg, rgba(37,28,24,0.97) 0%, rgba(60,20,5,0.92) 60%, rgba(37,28,24,0.85) 100%), url('${wholesaleBanner.backgroundImage}')`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
         <div className="mx-auto flex max-w-[1400px] justify-center px-5 text-center">
           <div className="max-w-4xl">
-            <p className="whitespace-nowrap text-xs font-semibold uppercase tracking-[0.2em] text-[#c94708]">For Business Buyers</p>
-            <h2 className="mt-4 whitespace-nowrap text-4xl font-black leading-tight text-white sm:text-5xl lg:text-6xl">
-              Wholesale & <span className="text-[#c94708]">Export Solutions</span>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c94708]">
+              {wholesaleBanner.eyebrow}
+            </p>
+            <h2 className="mt-4 text-4xl font-black leading-tight text-white sm:text-5xl lg:text-6xl">
+              {wholesaleBanner.titlePrefix}{" "}
+              <span className="text-[#c94708]">
+                {wholesaleBanner.titleAccent}
+              </span>
             </h2>
             <p className="mx-auto mt-6 max-w-3xl text-base leading-7 text-white/70">
-              We supply restaurants, hotels, supermarkets, and international distributors with premium Rwandan beverages. Competitive bulk pricing, flexible delivery schedules, and dedicated account management.
+              {wholesaleBanner.description}
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-4">
-              <Link to="/wholesale" className="inline-flex items-center gap-2 bg-[#c94708] px-7 py-3.5 text-sm font-bold text-white hover:bg-[#9f3506] transition">
-                Open Wholesale Account <ChevronRight size={16} />
+              <Link
+                to={wholesaleBanner.primaryButton.url}
+                className="inline-flex items-center gap-2 bg-[#c94708] px-7 py-3.5 text-sm font-bold text-white transition hover:bg-[#9f3506]"
+              >
+                {wholesaleBanner.primaryButton.text}
+                <ChevronRight size={16} />
               </Link>
-              <Link to="/export" className="inline-flex items-center gap-2 border border-white/30 px-7 py-3.5 text-sm font-bold text-white hover:border-[#c94708] hover:text-[#c94708] transition">
-                Export Enquiry
+              <Link
+                to={wholesaleBanner.secondaryButton.url}
+                className="inline-flex items-center gap-2 border border-white/30 px-7 py-3.5 text-sm font-bold text-white transition hover:border-[#c94708] hover:text-[#c94708]"
+              >
+                {wholesaleBanner.secondaryButton.text}
               </Link>
             </div>
           </div>
         </div>
       </section>
+
+
 
       {/* Testimonials */}
       <section className="bg-[#f3efe9] px-5 py-20 sm:px-8 sm:py-24 lg:px-16">
