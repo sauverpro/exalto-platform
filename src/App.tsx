@@ -8,6 +8,7 @@ import { FavoritesProvider } from "./context/FavoritesContext";
 import { UserProvider } from "./context/UserContext";
 import { ToastProvider } from "./context/ToastContext";
 import { SiteContentProvider } from "./context/SiteContentContext";
+import { LanguageProvider } from "./context/LanguageContext";
 
 import Home from "./pages/home";
 import Shop from "./pages/shop";
@@ -70,18 +71,20 @@ function Layout() {
 function App() {
   return (
     <BrowserRouter>
-      <ScrollToTop />
-      <ToastProvider>
-        <SiteContentProvider>
-          <UserProvider>
-            <CartProvider>
-              <FavoritesProvider>
-                <Layout />
-              </FavoritesProvider>
-            </CartProvider>
-          </UserProvider>
-        </SiteContentProvider>
-      </ToastProvider>
+      <LanguageProvider>
+        <ScrollToTop />
+        <ToastProvider>
+          <SiteContentProvider>
+            <UserProvider>
+              <CartProvider>
+                <FavoritesProvider>
+                  <Layout />
+                </FavoritesProvider>
+              </CartProvider>
+            </UserProvider>
+          </SiteContentProvider>
+        </ToastProvider>
+      </LanguageProvider>
     </BrowserRouter>
   );
 }

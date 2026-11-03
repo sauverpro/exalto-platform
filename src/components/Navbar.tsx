@@ -5,8 +5,15 @@ import { useCart } from '../context/CartContext'
 import { useFavorites } from '../context/FavoritesContext'
 import { useUser } from '../context/UserContext'
 import logoImage from '../assets/logo-image.png'
+import { useLanguage, type Language } from '../context/LanguageContext'
 
 function Navbar() {
+  const { language, setLanguage, t } = useLanguage()
+  const languageOptions: { value: Language; label: string }[] = [
+    { value: 'en', label: 'English' },
+    { value: 'fr', label: 'Français' },
+    { value: 'rw', label: 'Kinyarwanda' },
+  ]
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const { itemCount } = useCart()
@@ -36,12 +43,12 @@ function Navbar() {
         {/* Desktop nav */}
         <nav className="hidden lg:flex items-center gap-1">
           {[
-            { to: "/", label: "Home" },
-            { to: "/shop", label: "Shop" },
-            { to: "/about", label: "About" },
-            { to: "/wholesale", label: "Wholesale" },
-            { to: "/export", label: "Export" },
-            { to: "/contact", label: "Contact" },
+            { to: '/', label: t('home') },
+            { to: '/shop', label: t('shop') },
+            { to: '/about', label: t('about') },
+            { to: '/wholesale', label: t('wholesale') },
+            { to: '/export', label: t('export') },
+            { to: '/contact', label: t('contact') },
           ].map(({ to, label }) => (
             <Link
               key={to}
@@ -55,6 +62,19 @@ function Navbar() {
 
         {/* Actions */}
         <div className="flex items-center gap-2 sm:gap-3">
+          <label className="hidden sm:flex items-center">
+            <span className="sr-only">{t('language')}</span>
+            <select
+              value={language}
+              onChange={(event) => setLanguage(event.target.value as Language)}
+              className="h-9 rounded-full border border-line bg-white px-3 text-xs font-semibold text-navy outline-none focus:ring-2 focus:ring-brand/20"
+              aria-label={t('language')}
+            >
+              {languageOptions.map(({ value, label }) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </label>
           <button
             type="button"
             onClick={() => navigate('/shop')}
@@ -131,6 +151,19 @@ function Navbar() {
             {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
+
+        {/* Desktop language selector */}
+        <div className="hidden lg:flex items-center gap-1">
+          {languageOptions.map(({ value, label }) => (
+            <Link
+              key={value}
+              to={value}
+              className={`px-4 py-2 text-sm font-semibold rounded-lg transition ${isActive(value) ? 'text-brand' : 'text-navy hover:text-brand'}`}
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
       </div>
 
       {/* Mobile menu */}
@@ -138,12 +171,12 @@ function Navbar() {
         <nav className="max-h-[calc(100svh-72px)] overflow-y-auto border-t border-line bg-white px-5 py-4 shadow-lg sm:max-h-[calc(100svh-88px)] lg:hidden">
           <div className="flex flex-col gap-1">
             {[
-              { to: "/", label: "Home" },
-              { to: "/shop", label: "Shop" },
-              { to: "/about", label: "About" },
-              { to: "/wholesale", label: "Wholesale" },
-              { to: "/export", label: "Export" },
-              { to: "/contact", label: "Contact" },
+              { to: '/', label: t('home') },
+              { to: '/shop', label: t('shop') },
+              { to: '/about', label: t('about') },
+              { to: '/wholesale', label: t('wholesale') },
+              { to: '/export', label: t('export') },
+              { to: '/contact', label: t('contact') },
             ].map(({ to, label }) => (
               <Link
                 key={to}
