@@ -1,0 +1,273 @@
+@import "tailwindcss";
+
+/* ── Exalto Green Ltd brand palette ───────────────────────────────────────────
+   Tailwind v4 reads @theme and generates utilities from each token, so
+   `--color-brand` gives you bg-brand / text-brand / border-brand / ring-brand.
+
+   Define a colour ONCE here. The old code hardcoded #c94708 in 503 places
+   across 27 files, which is why every palette tweak has been a 27-file edit
+   and kept silently breaking the light-mode rules further down this file.
+   ─────────────────────────────────────────────────────────────────────────── */
+@theme {
+  /* Primary — agriculture, sustainability, growth */
+  --color-brand: #1f6b45;
+  --color-brand-dark: #175335; /* hover/active */
+  --color-brand-soft: #e8f0eb; /* tinted fills, 10% wash */
+
+  /* Secondary — engineering, stability, trust.
+     Four steps so the dashboards keep their depth: page < card < input < border. */
+  --color-navy: #173b5e; /* input + icon tile fills */
+  --color-navy-dark: #102a43; /* card surfaces */
+  --color-navy-deep: #0b1b2b; /* page background */
+  --color-navy-line: #1d4468; /* borders on dark */
+
+  /* Text on the navy dashboards */
+  --color-ink: #c7d3de; /* body */
+  --color-ink-muted: #8ea3b5; /* labels, meta */
+
+  /* Accent — prosperity, value. Use sparingly. */
+  --color-ochre: #c99a2e;
+
+  /* Neutral — infrastructure, technical precision */
+  --color-concrete: #6d7478;
+
+  /* Background + hairlines */
+  --color-offwhite: #f5f4ef;
+  --color-line: #e3e1d8;
+}
+
+:root {
+  --text: #6b6375;
+  --text-h: #08060d;
+  --bg: #fff;
+  --border: #e5e4e7;
+  --code-bg: #f4f3ec;
+  --accent: #aa3bff;
+  --accent-bg: rgba(170, 59, 255, 0.1);
+  --accent-border: rgba(170, 59, 255, 0.5);
+  --social-bg: rgba(244, 243, 236, 0.5);
+  --shadow:
+    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+
+  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+
+  font: 18px/145% var(--sans);
+  letter-spacing: 0.18px;
+  color-scheme: light dark;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  @media (max-width: 1024px) {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #9ca3af;
+    --text-h: #f3f4f6;
+    --bg: #16171d;
+    --border: #2e303a;
+    --code-bg: #1f2028;
+    --accent: #c084fc;
+    --accent-bg: rgba(192, 132, 252, 0.15);
+    --accent-border: rgba(192, 132, 252, 0.5);
+    --social-bg: rgba(47, 48, 58, 0.5);
+    --shadow:
+      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+  }
+
+  #social .button-icon {
+    filter: invert(1) brightness(2);
+  }
+}
+
+/* Make root responsive: full width with a sensible max and horizontal padding */
+#root {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  border-inline: none;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  max-width: 100%;
+  /* `clip` rather than `hidden`: it contains stray overflow without turning the
+     body into a scroll container, which would break every `position: sticky` header. */
+  overflow-x: clip;
+}
+
+/* Media and embeds never force the page wider than the viewport */
+img,
+video,
+canvas,
+svg,
+iframe {
+  max-width: 100%;
+}
+
+/* Horizontal scrollers (filter chips, wide tables) without a visible scrollbar */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Dashboard light mode ─────────────────────────────────────────────────────
+   These override the dark dashboard surfaces when `.admin-light` is on the root.
+   They match on class-name substrings, so they must be kept in step with the
+   token names used in the dashboards — rename a token and update these too.
+   (Before tokens existed these matched raw hex like `bg-[#1a1008]`, which broke
+   silently every time a colour changed.)
+   ─────────────────────────────────────────────────────────────────────────── */
+.admin-light {
+  background-color: #f5f4ef;
+  color: #173b5e;
+}
+
+.admin-light [class*="bg-navy-deep"],
+.admin-light [class*="bg-navy-dark"] {
+  background-color: #f5f4ef;
+}
+
+.admin-light [class*="bg-navy"]:not([class*="bg-navy-deep"]):not(
+    [class*="bg-navy-dark"]
+  ):not([class*="bg-navy-line"]) {
+  background-color: #ffffff;
+}
+
+.admin-light [class*="border-navy-line"] {
+  border-color: #e3e1d8;
+}
+
+.admin-light [class*="text-white"] {
+  color: #173b5e;
+}
+
+/* Keep white text legible on the brand-green fills */
+.admin-light [class*="bg-brand"] [class*="text-white"],
+.admin-light [class*="bg-brand"].text-white {
+  color: #ffffff;
+}
+
+.admin-light [class*="text-ink"] {
+  color: #6d7478;
+}
+
+.admin-light [class*="placeholder-ink-muted"]::placeholder {
+  color: #8b9299;
+}
+
+/* Success / error banners: the dark-mode tints (emerald-950, red-950 at low
+   opacity) turn muddy on the cream background, so give them light fills and
+   dark text. Matched with ~= so `hover:bg-red-950/40` buttons are untouched. */
+.admin-light [class~="bg-emerald-950/20"],
+.admin-light [class~="bg-emerald-950/30"] {
+  background-color: #e7f6ee;
+  border-color: #9fd8b8;
+  color: #146c43;
+}
+
+.admin-light [class~="bg-emerald-950/20"] [class*="text-emerald-400"],
+.admin-light [class~="bg-emerald-950/30"] [class*="text-emerald-400"] {
+  color: #146c43;
+}
+
+.admin-light [class~="bg-red-950/30"],
+.admin-light [class~="bg-red-950/40"] {
+  background-color: #fdecec;
+  border-color: #f2b8b8;
+  color: #b42318;
+}
+
+.admin-light [class~="bg-red-950/30"] [class*="text-red-400"],
+.admin-light [class~="bg-red-950/40"] [class*="text-red-400"] {
+  color: #b42318;
+}
+
+/* Logout: red text at rest so it stands out from the grey nav items, and a
+   light red fill on hover — same reds as the error banner. */
+.admin-light [class~="hover:bg-red-950/40"] {
+  color: #b42318;
+}
+
+.admin-light [class~="hover:bg-red-950/40"]:hover {
+  background-color: #fbd5d5;
+  color: #912018;
+}
+
+/* Sidebar hover: dark pill with genuinely white text, as in dark mode. */
+.admin-light [class*="hover:bg-navy-line"]:hover {
+  background-color: #173b5e;
+}
+
+.admin-light [class*="hover:bg-navy-line"][class*="hover:text-white"]:hover {
+  color: #ffffff;
+}
+/* These element defaults MUST stay inside `@layer base`.
+   Tailwind v4 puts every utility in `@layer utilities`, and unlayered CSS beats
+   layered CSS no matter the specificity — so leaving these unlayered made
+   `h1`/`h2`/`code` ignore Tailwind classes like `text-white`, `text-4xl` and
+   `bg-[#1a1008]` entirely. Inside the base layer they are true defaults that any
+   utility can override. */
+@layer base {
+  h1,
+  h2 {
+    font-family: var(--heading);
+    font-weight: 500;
+    color: var(--text-h);
+  }
+
+  h1 {
+    font-size: 56px;
+    letter-spacing: -1.68px;
+    margin: 32px 0;
+    @media (max-width: 1024px) {
+      font-size: 36px;
+      margin: 20px 0;
+    }
+  }
+  h2 {
+    font-size: 24px;
+    line-height: 118%;
+    letter-spacing: -0.24px;
+    margin: 0 0 8px;
+    @media (max-width: 1024px) {
+      font-size: 20px;
+    }
+  }
+  p {
+    margin: 0;
+  }
+
+  code,
+  .counter {
+    font-family: var(--mono);
+    display: inline-flex;
+    border-radius: 4px;
+    color: var(--text-h);
+  }
+
+  code {
+    font-size: 15px;
+    line-height: 135%;
+    padding: 4px 8px;
+    background: var(--code-bg);
+  }
+}
