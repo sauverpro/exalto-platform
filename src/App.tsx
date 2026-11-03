@@ -8,7 +8,6 @@ import { FavoritesProvider } from "./context/FavoritesContext";
 import { UserProvider } from "./context/UserContext";
 import { ToastProvider } from "./context/ToastContext";
 import { SiteContentProvider } from "./context/SiteContentContext";
-import { LanguageProvider } from "./context/LanguageContext";
 
 import Home from "./pages/home";
 import Shop from "./pages/shop";
@@ -32,7 +31,15 @@ import FAQsPage from "./pages/faqs";
 import SalesManagerDashboard from "./pages/sales manager-dashboard";
 
 // Routes that render their own chrome, so the public Navbar/Footer are hidden.
-const NO_LAYOUT_PATHS = ["/admin-login", "/admin-dashboard", "/sales-manager-dashboard", "/customer-dashboard", "/login", "/register", "/forgot-password"];
+const NO_LAYOUT_PATHS = [
+  "/admin-login",
+  "/admin-dashboard",
+  "/sales-manager-dashboard",
+  "/customer-dashboard",
+  "/login",
+  "/register",
+  "/forgot-password",
+];
 
 function Layout() {
   const { pathname } = useLocation();
@@ -57,7 +64,10 @@ function Layout() {
         <Route path="/customer-dashboard" element={<CustomerDashboard />} />
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
-        <Route path="/sales-manager-dashboard" element={<SalesManagerDashboard />} />
+        <Route
+          path="/sales-manager-dashboard"
+          element={<SalesManagerDashboard />}
+        />
         <Route path="/product/:id" element={<ProductDetailPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/terms" element={<TermsPage />} />
@@ -71,20 +81,18 @@ function Layout() {
 function App() {
   return (
     <BrowserRouter>
-      <LanguageProvider>
-        <ScrollToTop />
-        <ToastProvider>
-          <SiteContentProvider>
-            <UserProvider>
-              <CartProvider>
-                <FavoritesProvider>
-                  <Layout />
-                </FavoritesProvider>
-              </CartProvider>
-            </UserProvider>
-          </SiteContentProvider>
-        </ToastProvider>
-      </LanguageProvider>
+      <ScrollToTop />
+      <ToastProvider>
+        <SiteContentProvider>
+          <UserProvider>
+            <CartProvider>
+              <FavoritesProvider>
+                <Layout />
+              </FavoritesProvider>
+            </CartProvider>
+          </UserProvider>
+        </SiteContentProvider>
+      </ToastProvider>
     </BrowserRouter>
   );
 }
